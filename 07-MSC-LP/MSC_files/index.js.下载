@@ -1,0 +1,28 @@
+$(function(){
+    //菜单点击
+    $(".J_menuItem").on('click',function(){
+        $(".J_menuItem").removeClass('active');
+        $(this).addClass('active');
+
+        var url = $(this).attr('href');
+        $("#J_iframe").attr('src',url);
+        return false;
+    });
+
+    $(".navbar-top-links .haschild").hover(function(){
+        var _this = $(this),
+            $el = _this.find(".dropdown-menu");
+
+        $el.show();
+    }, function(){
+        var _this = $(this),
+            $el = _this.find(".dropdown-menu");
+
+        $el.hide();
+    })
+});
+$("#refresh_wrapper").click(function(){
+    var $current_iframe=$("#content-main iframe:visible");
+    $current_iframe[0].contentWindow.location.reload();
+    return false;
+});
