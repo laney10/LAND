@@ -1,0 +1,97 @@
+::-webkit-input-placeholder { color: #999; }
+/* WebKit browsers */
+:-o-placeholder { color: #999; }
+
+/* Mozilla Firefox 4 to 18 */
+::-moz-placeholder { color: #999; }
+
+/* Mozilla Firefox 19+ */
+:-ms-input-placeholder { color: #999; }
+
+.kefu-content{font-size: 0;background-color: #fff;overflow: hidden;width: 100%;height: 100%;position: relative;}
+*{font-family: 'Arial';}
+body{margin: 0;}
+p{margin: 0;}
+/*中间*/
+.kefu-talk{width: 100%;height: 100%;}
+.kefu-talk .talk-list{overflow: hidden;box-sizing: border-box;position: relative;padding: 0;height: 100%;padding-bottom: 95px;}
+.kefu-talk .talk-list .list-content{height: 100%;width: 100%;overflow: auto;display: block;background-color: #f0f3f4;}
+.kefu-talk .talk-list .list-content .list-box{padding-top: 12px;position: relative;padding: 10px 10px 10px;max-width: 100%;background-color: #f0f3f4;}
+.talk-time{text-align: center;font-size: 14px;line-height: 35px;color: #999;background-color: #f0f3f4;z-index: 1;position: relative;}
+.no-msg{text-align: center;font-size: 14px;line-height: 20px;color: #999;position: absolute;top: 10px;width: 100%;left: 0;z-index: 0;}
+
+/*文件*/
+.kefu-talk .talk-list .list-content .list-box .file-img{position: absolute;width: 18px;height: 17px;top:3px;left: 0; background-image: url("../images/file-doc2.png");background-repeat: no-repeat;background-position: center;background-size: cover;-webkit-background-size: cover;}
+.kefu-talk .talk-list .list-content .list-box .file-download{cursor: pointer; position: absolute;width: 16px;height: 16px;bottom:0;right: 0; background-image: url("../images/file-download2.png");background-repeat: no-repeat;background-position: center;background-size: cover;-webkit-background-size: cover;}
+.file-text{padding: 0 21px 0 23px;display: block;}
+.kefu-talk .talk-list .list-content .list-box .m-ask-info .file-img{background-image: url("../images/file-doc.png");}
+.kefu-talk .talk-list .list-content .list-box .m-ask-info .file-download{background-image: url("../images/file-download.png");}
+
+/*图片*/
+.kefu-talk .talk-list .list-content .list-box .msg-img{width: 100%;height: 100%; max-width: 200px;max-height: 200px;}
+
+
+/*客服*/
+.m-kefus {white-space: nowrap;margin-bottom: 10px;position: relative;max-width: 100%;}
+.m-kefus-left {display: inline-block;vertical-align: bottom;width: 45px;position: absolute;left: 0;bottom: 0;display: inline-block;}
+.m-kefus-right {padding-left: 45px;padding-right: 10px;max-width: 100%;}
+.m-kefus-left>img {width: 37px;height: 37px;-webkit-border-radius: 50%;-moz-border-radius: 50%;border-radius: 50%;}
+.m-kefus-right p {font-size: 14px;color: #666666;text-align: left;position: relative;}
+.m-kefus-info {text-align: left; display: inline-block;max-width: 100%;padding: 10px 15px;border-radius: 15px;white-space: normal;font-size: 13px;word-break: break-word;word-wrap: break-word;color: #666666;background-color: #fff;border: 1px solid #dcdcdc;}
+.m-kefus-radios{position: absolute;bottom: 0;left: 37.75px;width: 21px;height: 18px;display: block;background-image: url("../images/left-radios.png");background-repeat: no-repeat;background-position: center;background-size: cover;-webkit-background-size: cover;}
+
+/*用户*/
+.m-ask {white-space: nowrap;margin-bottom: 10px;position: relative;max-width: 100%;}
+.m-ask-right {text-align: right; display: inline-block;vertical-align: bottom;width: 45px;position: absolute;right: 0;bottom: 0;display: inline-block;}
+.m-ask-left {padding-left: 10px;padding-right: 10px;max-width: 100%;text-align: right;}
+.m-ask-right>img {width: 37px;height: 37px;-webkit-border-radius: 50%;-moz-border-radius: 50%;border-radius: 50%;}
+.m-ask-left p {font-size: 14px;color: #fff;text-align: left;position: relative;}
+.m-ask-info {display: inline-block;max-width: 100%;padding: 10px 15px;background-color: #5492ff;color: #fff;border-radius: 15px;white-space: normal;font-size: 13px;word-break: break-word;word-wrap: break-word;border: 1px solid #dcdcdc;    text-align: left;}
+.m-ask-radios{position: absolute;bottom: 0;right: 2.75px;width: 21px;height: 18px;display: block;background-image: url("../images/right-radios.png");background-repeat: no-repeat;background-position: center;background-size: cover;-webkit-background-size: cover;}
+/*底部*/
+.talk-botoom {height: 95px;position: absolute;left: 0;bottom: 0;width: 100%;background: #fff;z-index: 20;}
+.talk-botoom .input-text{width: 100%;height: 46px;padding: 0;resize: none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;font-size: 14px;line-height: 18px;color: #999;border: 0;}
+.talk-botoom .input-text:focus{outline: none;border: 0;-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
+.talk-botoom .top-input{width: 100%;height: 56px;padding: 5px 10px;resize: none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;font-size: 14px;line-height: 18px;color: #999;}
+.talk-botoom .pic-btn{position: relative; margin-right: 10px; float: left;padding: 12px 12px;cursor: pointer;display: inline-block;text-align: center;background-image: url("../images/file-img.png");background-repeat: no-repeat;background-position: center;background-size: 18px 16px;-webkit-background-size: 18px 16px;}
+.talk-botoom .pic-btn:hover{background-image: url("../images/file-img2.png");}
+.talk-botoom .pic-btn input{position: absolute; position: static\9; width: 100%; width: auto\9;  height: 100%;height: auto\9; top: 0; left: 0;  opacity: 0; opacity: 1\9;filter: opacity(0); filter: opacity(100)\9;cursor: pointer;}
+.talk-botoom .file-btn{position: relative; float: left;padding: 12px 12px;cursor: pointer;display: inline-block;text-align: center;background-image: url("../images/fine-file.png");background-repeat: no-repeat;background-position: center;background-size: 16px 16px;-webkit-background-size: 16px 16px;}
+.talk-botoom .file-btn:hover{background-image: url("../images/fine-file2.png");}
+.talk-botoom .file-btn input{position: absolute; position: static\9; width: 100%; width: auto\9;  height: 100%;height: auto\9; top: 0; left: 0;  opacity: 0; opacity: 1\9;filter: opacity(0); filter: opacity(100)\9;cursor: pointer;}
+
+
+.talk-botoom .bot-menu{width: 100%;height: 39px;padding: 4px 20px;position: relative;overflow: hidden;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
+.talk-botoom .talk-btn{float: right;padding: 12px 12px;cursor: pointer;display: inline-block;text-align: center;background-image: url("../images/commit.png");background-repeat: no-repeat;background-position: center;background-size: cover;-webkit-background-size: cover;}
+.talk-botoom .talk-btn:hover{}
+
+/*@media screen and (max-width: 750px) {*/
+    /*.kefu-talk .talk-list{padding-bottom: 140px;}*/
+    /*.talk-botoom{height: 105px;}*/
+    /*.talk-botoom .bot-menu{height: 49px;}*/
+    /*.talk-botoom .pic-btn{background-size: 29.25px 26px;-webkit-background-size: 29.25px 26px;background-image: url(../images/file-img-2.png);}*/
+    /*.talk-botoom .pic-btn:hover{background-image: url(../images/file-img2-2.png);}*/
+    /*.webuploader-pick{padding: 17px;}*/
+    /*.talk-botoom .file-btn{background-size: 16px 16px;-webkit-background-size: 26px 26px;background-image: url(../images/fine-file-2.png);}*/
+    /*.talk-botoom .file-btn:hover{background-image: url(../images/fine-file2-2.png);}*/
+    /*.talk-botoom .talk-btn{padding: 15px 17px;}*/
+    /*.talk-botoom .talk-btn{background-image: url(../images/commit2.png);}*/
+/*}*/
+
+/*@media screen and (max-width: 600px) {*/
+    /*.talk-botoom .bot-menu{height: 35px;}*/
+    /*.talk-botoom .pic-btn{background-size: 24.75px 22px;-webkit-background-size: 24.75px 22px;}*/
+    /*.webuploader-pick{padding: 12px;}*/
+    /*.talk-botoom .file-btn{background-size: 12px 12px;-webkit-background-size: 22px 22px;}*/
+    /*.talk-botoom .talk-btn{padding: 12px 15px;}*/
+    /*.talk-botoom .top-input{height: 65px;}*/
+    /*.talk-botoom .input-text{height: 55px;}*/
+/*}*/
+
+
+/*查看图片*/
+.look-pic{width: 100%;height: 100%;position: fixed;top: 0;left: 0;background-color: rgba(0,0,0,0.5);display: none;z-index: 999999999999;}
+.look-pic .look-pic-img{width: 100%;height: 100%;max-width: 100%;max-height: 100%;text-align: center; position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);-webkit-transform: translate(-50%, -50%);}
+.look-pic .look-pic-img img{max-width: 90%;max-height: 90%;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);-webkit-transform: translate(-50%, -50%);}
+.look-pic .look-pic-close{cursor: pointer; position: absolute;width: 26px;height: 26px;background-color: #000;font-size: 20px;line-height: 26px;font-weight: bold;text-align: center;color: #fff;top: 20px;right: 20px;}
+.look-pic .look-pic-close:hover{background-color: #ff0000;}

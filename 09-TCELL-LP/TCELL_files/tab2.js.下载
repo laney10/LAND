@@ -1,0 +1,56 @@
+$(function(){
+	$('.tab-w').each(function(_,item){
+		var clho = $(this).find('.x-tab').data('clho');
+		var clk;
+	var tabc = function(item){
+		if(clk){
+			$(item).find(".x-tab>li").click(function(e){
+				e.preventDefault();
+				$(this).closest(".x-tab").children("li").removeClass("tab-dq");
+				$(this).addClass("tab-dq");
+				
+				var dtab = $(this).closest(".tab-w").find(".tab-nr").first().children(".d-tab");
+				var xbi = $(this).index();
+				dtab.css("display","none");
+				dtab.eq(xbi).css("display","block")
+			})
+		}else{
+			$(item).find(".x-tab>li").hover(function(e){
+				// e.preventDefault();
+				$(this).closest(".x-tab").children("li").removeClass("tab-dq");
+				$(this).addClass("tab-dq");
+				
+				var dtab = $(this).closest(".tab-w").find(".tab-nr").first().children(".d-tab");
+				var xbi = $(this).index();
+				dtab.css("display","none");
+				dtab.eq(xbi).css("display","block")
+			})
+		}
+	}
+
+	if(clho == 'cl'){
+		clk = true
+		tabc(item)
+	}
+	if(clho == 'ho'){
+		if($(window).width() > 1000){
+			clk = false;
+			tabc(item)
+		}else{
+			clk = true;
+			tabc(item)
+		}
+
+		$(window).resize(function(){
+			if($(window).width() > 1000){
+				clk = false;
+				tabc(item)
+			}else{
+				clk = true;
+				tabc(item)
+			}
+		})
+	}
+
+	})
+})
