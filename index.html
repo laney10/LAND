@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Product Series</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f8f9fa 0%, #eef2f6 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Decorative elements */
+        .decor-circle {
+            position: absolute;
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            background: #3276bb;
+            top: -200px;
+            right: -200px;
+        }
+        
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            background: #adc91d;
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        .decor-line {
+            position: absolute;
+            height: 1px;
+            background: rgba(50, 118, 187, 0.1);
+            z-index: -1;
+        }
+        
+        .line-1 {
+            width: 100%;
+            top: 20%;
+            transform: rotate(5deg);
+        }
+        
+        .line-2 {
+            width: 80%;
+            top: 60%;
+            right: 0;
+            transform: rotate(-3deg);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header styles */
+        header {
+            background: linear-gradient(135deg, #3276bb 0%, #2a63a0 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+            pointer-events: none;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+        
+        .divider {
+            width: 80px;
+            height: 4px;
+            background: #adc91d;
+            margin: 1.5rem auto;
+            border-radius: 2px;
+        }
+        
+        /* Series navigation */
+        .series-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .series-btn {
+            padding: 14px 28px;
+            background: white;
+            border: 2px solid #3276bb;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #3276bb;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .series-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3276bb 0%, #2a63a0 100%);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+        
+        .series-btn:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        .series-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .series-btn.active {
+            background: #adc91d;
+            border-color: #adc91d;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        .series-btn.active::before {
+            background: #adc91d;
+            transform: scaleX(1);
+        }
+        
+        .series-btn i {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+        
+        /* Products grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 4rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            transform: translateY(0);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-top: 60px solid #adc91d;
+            border-left: 60px solid transparent;
+            z-index: 2;
+        }
+        
+        .card-corner i {
+            position: absolute;
+            top: -50px;
+            right: 8px;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f1f1f1 0%, #e5e5e5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(50, 118, 187, 0.1) 0%, rgba(173, 201, 29, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .product-card:hover .card-image::before {
+            opacity: 1;
+        }
+        
+        .card-image i {
+            font-size: 4rem;
+            color: rgba(50, 118, 187, 0.3);
+            transition: transform 0.4s ease;
+        }
+        
+        .product-card:hover .card-image i {
+            transform: scale(1.1);
+        }
+        
+        .card-content {
+            padding: 25px;
+            position: relative;
+        }
+        
+        .card-content h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .card-content h3::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #adc91d;
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+        
+        .product-card:hover .card-content h3::after {
+            width: 80px;
+        }
+        
+        .card-content p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background: #3276bb;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .card-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #adc91d 0%, #9bb41a 100%);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-link:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(50, 118, 187, 0.3);
+        }
+        
+        .card-link:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        .card-link i {
+            margin-left: 8px;
+            font-size: 0.9em;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-link:hover i {
+            transform: translateX(5px);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            color: #666;
+            background: white;
+            position: relative;
+        }
+        
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3276bb;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .footer-logo span {
+            color: #adc91d;
+        }
+        
+        .footer-text {
+            max-width: 600px;
+            margin: 0 auto 20px;
+            font-size: 1.05rem;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: #f1f1f1;
+            border-radius: 50%;
+            color: #3276bb;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: #3276bb;
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .series-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .series-btn {
+                width: 100%;
+                max-width: 300px;
+                margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorative elements -->
+    <div class="decor-circle circle-1"></div>
+    <div class="decor-circle circle-2"></div>
+    <div class="decor-line line-1"></div>
+    <div class="decor-line line-2"></div>
+    
+    <header>
+        <div class="header-content">
+            <h1>Premium Product Series</h1>
+            <p class="subtitle">Explore our comprehensive range of high-quality biotechnology solutions</p>
+            <div class="divider"></div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Series navigation -->
+        <div class="series-nav">
+            <button class="series-btn active" data-series="all"><i class="fas fa-layer-group"></i> All Products</button>
+            <button class="series-btn" data-series="serum"><i class="fas fa-flask"></i> SERUM Series</button>
+            <button class="series-btn" data-series="sfm"><i class="fas fa-microscope"></i> SFM Series</button>
+            <button class="series-btn" data-series="cr"><i class="fas fa-vial"></i> CR Series</button>
+        </div>
+        
+        <!-- Products grid -->
+        <div class="products-grid">
+            <!-- SERUM Series -->
+            <div class="product-card" data-series="serum">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="card-content">
+                    <h3>SERUM Series</h3>
+                    <p>High-quality serum products providing optimal growth environment for cell culture with superior performance.</p>
+                    <a href="https://1.excell-artica.com/01-SERUM-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <!-- SFM Series -->
+            <div class="product-card" data-series="sfm">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <div class="card-content">
+                    <h3>TCELL Products</h3>
+                    <p>Premium media specifically designed for advanced T cell research and development.</p>
+                    <a href="https://1.excell-artica.com/09-TCELL-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="sfm">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="card-content">
+                    <h3>CHO Products</h3>
+                    <p>Highly efficient media solutions for CHO cells with enhanced productivity.</p>
+                    <a href="https://1.excell-artica.com/02-CHO-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="sfm">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-vial"></i>
+                </div>
+                <div class="card-content">
+                    <h3>293 Products</h3>
+                    <p>Optimized media for human embryonic kidney cells, maximizing transfection efficiency.</p>
+                    <a href="https://1.excell-artica.com/03-293-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="sfm">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="card-content">
+                    <h3>MSC Products</h3>
+                    <p>Specialized media for mesenchymal stem cells, preserving pluripotency and viability.</p>
+                    <a href="https://1.excell-artica.com/07-MSC-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="sfm">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>NKCELL Products</h3>
+                    <p>Advanced media for natural killer cells, boosting cytotoxicity and proliferation rates.</p>
+                    <a href="https://1.excell-artica.com/08-NKCELL-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <!-- CR Series -->
+            <div class="product-card" data-series="cr">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="card-content">
+                    <h3>HCD Products</h3>
+                    <p>High-precision cell culture detection reagents ensuring experimental accuracy.</p>
+                    <a href="https://1.excell-artica.com/04-HCD-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="cr">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-vial-circle-check"></i>
+                </div>
+                <div class="card-content">
+                    <h3>HCP Products</h3>
+                    <p>Reliable host cell protein detection reagents for bioproduct safety assurance.</p>
+                    <a href="https://1.excell-artica.com/05-HCP-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="product-card" data-series="cr">
+                <div class="card-corner">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="card-image">
+                    <i class="fas fa-bacteria"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Mycoplasma Products</h3>
+                    <p>Sensitive mycoplasma detection reagents to ensure contamination-free cell culture environments.</p>
+                    <a href="https://1.excell-artica.com/06-Mycoplasma-LP/" class="card-link" target="_blank">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">Excell<span>Artica</span></div>
+            <p class="footer-text">Innovative biotechnology solutions for advanced research and development</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+            <p class="copyright">&copy; 2023 ExcellArtica. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Series filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const seriesBtns = document.querySelectorAll('.series-btn');
+            const productCards = document.querySelectorAll('.product-card');
+            
+            seriesBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    seriesBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const series = btn.dataset.series;
+                    
+                    // Filter cards
+                    productCards.forEach(card => {
+                        if (series === 'all' || card.dataset.series === series) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
