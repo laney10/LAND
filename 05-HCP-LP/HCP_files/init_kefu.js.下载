@@ -1,0 +1,199 @@
+$(function () {
+
+    var site_host = window.location.protocol+'//'+window.location.host+window.location.pathname;
+
+    if (typeof (_referrer) == "undefined" || _referrer == null) {
+        _referrer = '';
+    }
+
+    if (typeof (page_type) == "undefined" || page_type == null) {
+        page_type = 0;
+    }
+
+    if (typeof (is_visitor) == "undefined" || is_visitor == null) {
+        is_visitor = "1";
+    }
+
+    var chatStyle = '';
+    if (is_visitor === "2") {
+       chatStyle = 'display:none;'
+    }
+
+    if (typeof(cookie_id) == "undefined" || cookie_id == null) {
+        CreatePopLayerDiv("Chat with Us", 290, 400, "", "//chat.chukouplus.com/chat/home/index?site_host="+site_host+"&_referrer="+_referrer+"&page_type="+page_type, chatStyle)
+    } else {
+        CreatePopLayerDiv("Chat with Us", 290, 400, "", "//chat.chukouplus.com/chat/home/index?cookie_id="+cookie_id+'&site_host='+site_host+"&_referrer="+_referrer+"&page_type="+page_type, chatStyle);
+    }
+});
+dynamicLoadCss("//chat.chukouplus.com/static/chat/css/init_kefu.css");
+window.addEventListener("message", function (e) {
+    if (e.data.msg == "true") {
+        $(".m-kefu-chat").focus()
+    } else {
+        if (e.data.msg == "true_news") {
+            $(".m-kefu-chat").focus();
+            if (window.screen.width <= 750) {
+                $(".mobile-logo span").show()
+            } else {
+                maxBoxMobile()
+            }
+        } else {
+            if (e.data.msg == "lookpic") {
+                lookPic(e.data.src)
+            } else {
+                if (e.data.msg == "false") {
+                    if (window.screen.width <= 750) {
+                        $(".mobile-logo span").show()
+                    }
+                    $(".m-kefu-chat").blur();
+                    if (window.screen.width > 750) {
+                        doFlashTitle2();
+                        $(".m-kefu-chat").css("bottom", "0px");
+                        $(".kefu-top .right-btn2").removeClass("active");
+                        $(".kefu-top .title").html("Chat with Us");
+                        $(".kefu-top .logo").hide();
+                        $(".m-kefu-chat").removeClass("mobile-hide")
+                    }
+                }
+            }
+        }
+    }
+}, false);
+var normalTitle = document.title;
+var isWindowFocus = true;
+
+function focusin() {
+    isWindowFocus = true
+}
+
+function focusout() {
+    isWindowFocus = false
+}
+
+if ("onfocusin" in document) {
+    document.onfocusin = focusin;
+    document.onfocusout = focusout
+} else {
+    window.onblur = focusout;
+    window.onfocus = focusin
+}
+var flashStep = 0;
+var flashTitleRun2 = false;
+
+function flashTitle2() {
+    if (isWindowFocus) {
+        document.title = normalTitle;
+        flashTitleRun2 = false;
+        return
+    }
+    flashTitleRun2 = true;
+    flashStep++;
+    if (flashStep == 3) {
+        flashStep = 1
+    }
+    if (flashStep == 1) {
+        document.title = normalTitle
+    }
+    if (flashStep == 2) {
+        document.title = "You have new messages!"
+    }
+    setTimeout(function () {
+        flashTitle2()
+    }, 300)
+}
+
+function doFlashTitle2() {
+    if (!flashTitleRun2) {
+        flashTitle2()
+    }
+}
+
+function dynamicLoadCss(url) {
+    var head = document.getElementsByTagName("head")[0];
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = url;
+    head.appendChild(link)
+}
+
+function CreatePopLayerDiv(title, width, height, content, url, style = '') {
+    var titles = title || "xht客服";
+    var Iheight = $(window).height();
+    var Iwidth = $(window).width();
+    var heights = height || 290;
+    var widths = width || 400;
+    var Oheight = (Iheight - heights) / 2;
+    var Owidth = (Iwidth - widths) / 2;
+    var contents = content || "内容";
+    var div = '<div class="m-kefu-chat mobile-hide" style="'+style+'">' + '<h6 class="kefu-top">' + '<img class="logo" src="//chat.chukouplus.com/static/chat/images/kefu-logo.png">' + '<label class="title">' + titles + "</label>" + '<span onclick="minBox(this);" title="最小化" class="right-btn2"></span>' + "</h6>" + '<iframe class="kefu-content" id="Content"></iframe>' + '<a class="mobile-logo" onclick="maxBoxMobile()"><span></span></a>\n' + '<a class="mobile-close" onclick="minBoxMobile()"></a>' + "</div>" + '<div class="look-pic">\n' + '    <p class="look-pic-img"><img src=""/></p>\n' + '    <span class="look-pic-close" onclick="closeLookPic()">x</span>\n' + "</div>";
+    $(document.body).append(div);
+    if (url != "") {
+        document.getElementById("Content").src = url
+    }
+}
+
+function RemoveDiv() {
+    $("#AClose").remove();
+    $("#HTitle").remove();
+    $("#offDiv").remove();
+    $("#InDiv").remove()
+}
+
+function btnCloses() {
+    RemoveDiv()
+}
+
+function minBox(obj) {
+    if ($(obj).hasClass("active")) {
+        $(".m-kefu-chat").css("bottom", "0px");
+        $(obj).removeClass("active");
+        $(".kefu-top .title").html("Chat with Us");
+        $(".kefu-top .logo").hide();
+        $(".m-kefu-chat").removeClass("mobile-hide")
+    } else {
+        $(".m-kefu-chat").css("bottom", "-365px");
+        $(obj).addClass("active");
+        $(".kefu-top .title").html("Consulting Customer Service");
+        $(".kefu-top .logo").show();
+        $(".m-kefu-chat").addClass("mobile-hide")
+    }
+}
+
+function maxBoxMobile() {
+    $("#Content").show();
+    $(".m-kefu-chat").css("bottom", "0px");
+    $(".right-btn2").removeClass("active");
+    $(".kefu-top .logo").hide();
+    $(".mobile-logo span").hide();
+    $(".kefu-top .title").html("Chat with Us");
+    $(".m-kefu-chat").removeClass("mobile-hide");
+    $(".mobile-logo").css("top", "0")
+}
+
+function minBoxMobile() {
+    $("#Content").hide();
+    $(".m-kefu-chat").css("bottom", "-365px");
+    $(".right-btn2").addClass("active");
+    $(".kefu-top .logo").show();
+    $(".mobile-logo span").hide();
+    $(".kefu-top .title").html("Consulting Customer Service");
+    $(".m-kefu-chat").addClass("mobile-hide");
+    $(".input-text").blur();
+    $(".mobile-logo").css("top", "0")
+}
+
+function lookPic(src) {
+    $(".look-pic").show();
+    $(".look-pic .look-pic-img img").attr("src", src)
+}
+
+function closeLookPic() {
+    $(".look-pic .look-pic-img img").attr("src", "");
+    $(".look-pic").hide()
+}
+
+$(".look-pic").click(function () {
+    $(".look-pic .look-pic-img img").attr("src", "");
+    $(this).hide()
+});

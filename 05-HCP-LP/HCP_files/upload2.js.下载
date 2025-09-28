@@ -1,0 +1,90 @@
+// 附件上传
+(function ($) {
+    // 当domReady的时候开始初始化
+    $(function () {
+        var uploader;
+
+        // 实例化
+        uploader = WebUploader.create({
+            pick: {
+                id: '#filePicker',
+                multiple: false,
+            },
+            formData: {},
+            fileVal: "file",
+            swf: 'js/Uploader.swf',
+            chunked: false,
+            chunkSize: 512 * 1024,
+            server: uplode_url,
+            compress: false,
+            duplicate: true,
+
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,png,xls,xlsx,doc,docx,pdf,zip',
+                mimeTypes: 'image/gif,image/jpg,image/jpeg,image/png,application/vnd.ms-excel,application/msword,application/pdf,aplication/zip'
+            },
+            // auto: true,
+            // 禁掉全局的拖拽功能。这样不会出现图片拖进页面的时候，把图片打开。
+            // disableGlobalDnd: true,
+            fileNumLimit: 1,
+            fileSizeLimit: 2 * 1024 * 1024,    // 2 M
+            fileSingleSizeLimit: 2 * 1024 * 1024    // 2 M
+        });
+
+        uploader.on('ready', function () {
+            window.uploader = uploader;
+        });
+
+        //选择图片后
+        uploader.onFileQueued = function (file) {
+            uploader.upload();
+        };
+
+        //上传成功
+        uploader.on('uploadSuccess', function (file, response) {
+            // showMsg("上传成功");
+            uploader.removeFile(file);
+            if(response.status == 1) {
+                sendMsgFile(response);
+
+            }else {
+                layer.msg("发送失败");
+                // showLongMsg("发送失败");
+            }
+        });
+
+        //上传失败
+        uploader.on('uploadError', function (file, response) {
+            layer.msg("上传失败");
+            // showLongMsg("上传失败");
+            uploader.removeFile(file);
+        });
+
+        //图片不符合要求
+        uploader.on('error', function (code) {
+            var err = '';
+            switch (code) {
+                case 'F_EXCEED_SIZE':
+                    err += '单个文件大小不得超过2M！';
+                    break;
+                case 'Q_EXCEED_NUM_LIMIT':
+                    err += '最多只能上传1个文件！';
+                    break;
+                case 'Q_EXCEED_SIZE_LIMIT':
+                    err += '上传文件总大小超出2M！';
+                    break;
+                case 'Q_TYPE_DENIED':
+                    err += '无效文件类型，请上传正确的文件格式！';
+                    break;
+                default:
+                    err += '上传错误，请刷新重试！';
+                    break;
+            }
+            layer.msg(err);
+            // showLongMsg(err);
+            return false;
+        });
+    });
+
+})(jQuery);

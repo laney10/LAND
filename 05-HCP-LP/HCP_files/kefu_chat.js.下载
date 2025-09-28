@@ -1,0 +1,348 @@
+$(function(){
+	scrollBot();
+});
+
+// 请求提交
+function sendMsg(obj) {
+
+	var text = $(".input-text").val();
+	var value = text;
+	if(!value.replace(/\s/g, "")){
+		return;
+	}
+    var time =new Date();
+
+	//秒级时间戳
+    var second_time = parseInt(new Date().getTime()/1000);
+
+    //获取上一次消息的时间
+    var logtime = $('#logtime').val();
+    var chat_time = '';
+	if (!logtime || logtime == 0 || ( second_time - logtime ) >= 300) {
+	    //时间格式 时 分  AM/PM 12小时制
+        chat_time = time.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true });
+        $('#logtime').val(second_time);
+    }
+
+	text = content_jx(text);
+    // 文件
+    // text = '<span class="file-img"></span><span class="file-text">aaaaaaaaaaa.doc<br>18k</span><a class="file-download"></a>';
+    // 图片
+    // text = '<img class="msg-img" ondblclick="lookPic(this)" src="../images/kefu.png"/>';
+
+    if (chat_time == '') {
+        var html = '';
+    } else {
+        var html = '				<p class="talk-time">'+chat_time+'</p>\n';
+    }
+    html += '                        <div class="m-ask">\n' +
+        // '                            <div class="m-ask-right">\n' +
+        // '                                <img src="/static/chat/images/curstom.png">\n' +
+        // '                            </div>\n' +
+        '                            <div class="m-ask-left">\n' +
+        '                                <div class="m-ask-info">\n' +
+        '                                    <div style="overflow-x:auto;">\n' +
+        '                                        <p>'+text+'</p>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <span class="m-ask-radios"></span>\n' +
+        '                        </div>';
+    appendList(html);
+
+
+    var data = {};
+    data['type'] = "chatMessage";
+    data['data'] = {};
+    data['data']['content'] = value;
+    data['data']['HTTP_REFERER'] = url;
+    data['data']['to'] = {};
+    data['data']['to']['type'] = 'friend';
+    data['data']['to']['id'] = admin_id;
+    data['data']['is_admin'] = 0;
+    data['data']['is_auto_reply'] = 0;
+    data['data']['cookie_id'] = cookie_id_iid;
+
+    data = JSON.stringify( data );
+    socket.send(data);
+    $(".input-text").remove();
+    $(".top-input").append('<textarea class="input-text" placeholder="Type a message....." onkeyup="keyEnter(this)"></textarea>');
+    $(".input-text").focus();
+    $(".no-msg").hide();
+}
+
+/**
+ * 提交图片
+ * @param data
+ */
+function sendMsgImg(param){
+    if (!param.url) {
+        return;
+    }
+    var url = 'img['+ (param.url||'') +']';
+    var text = content_jx(url);
+    var time =new Date();
+
+    //秒级时间戳
+    var second_time = parseInt(new Date().getTime()/1000);
+
+    //获取上一次消息的时间
+    var logtime = $('#logtime').val();
+    var chat_time = '';
+    if (!logtime || logtime == 0 || ( second_time - logtime ) >= 300) {
+        //时间格式 时 分  AM/PM 12小时制
+        chat_time = time.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true });
+        $('#logtime').val(second_time);
+    }
+
+    if (chat_time == '') {
+        var html = '';
+    } else {
+        var html = '				<p class="talk-time">'+chat_time+'</p>\n';
+    }
+    html += '                        <div class="m-ask">\n' +
+        // '                            <div class="m-ask-right">\n' +
+        // '                                <img src="/static/chat/images/curstom.png">\n' +
+        // '                            </div>\n' +
+        '                            <div class="m-ask-left">\n' +
+        '                                <div class="m-ask-info">\n' +
+        '                                    <div style="overflow-x:auto;">\n' +
+        '                                        <p>'+text+'</p>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <span class="m-ask-radios"></span>\n' +
+        '                        </div>';
+    appendList(html);
+
+    var data = {};
+    data['type'] = "chatMessage";
+    data['data'] = {};
+    data['data']['content'] = url;
+    data['data']['HTTP_REFERER'] = url;
+    data['data']['to'] = {};
+    data['data']['to']['type'] = 'friend';
+    data['data']['to']['id'] = admin_id;
+    data['data']['is_admin'] = 0;
+    data['data']['is_auto_reply'] = 0;
+    data['data']['cookie_id'] = cookie_id_iid;
+
+    data = JSON.stringify( data );
+    $(".no-msg").hide();
+    socket.send(data);
+}
+
+/**
+ * 提交文件
+ * @param data
+ */
+function sendMsgFile(param){
+
+    if (!param.url) {
+        return;
+    }
+
+    var url = 'file('+ (param.url||'') +')['+ (param.name||'下载文件') +']['+ (param.size||'') +']';
+    var text = content_jx(url);
+
+    var time =new Date();
+
+    //秒级时间戳
+    var second_time = parseInt(new Date().getTime()/1000);
+
+    //获取上一次消息的时间
+    var logtime = $('#logtime').val();
+    var chat_time = '';
+    if (!logtime || logtime == 0 || ( second_time - logtime ) >= 300) {
+        //时间格式 时 分  AM/PM 12小时制
+        chat_time = time.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true });
+        $('#logtime').val(second_time);
+    }
+
+
+    if (chat_time == '') {
+        var html = '';
+    } else {
+        var html = '				<p class="talk-time">'+chat_time+'</p>\n';
+    }
+    html += '                        <div class="m-ask">\n' +
+        // '                            <div class="m-ask-right">\n' +
+        // '                                <img src="/static/chat/images/curstom.png">\n' +
+        // '                            </div>\n' +
+        '                            <div class="m-ask-left">\n' +
+        '                                <div class="m-ask-info">\n' +
+        '                                    <div style="overflow-x:auto;">\n' +
+        '                                        <p>'+text+'</p>\n' +
+        '                                    </div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <span class="m-ask-radios"></span>\n' +
+        '                        </div>';
+    appendList(html);
+
+    var data = {};
+    data['type'] = "chatMessage";
+    data['data'] = {};
+    data['data']['content'] = url;
+    data['data']['HTTP_REFERER'] = url;
+    data['data']['to'] = {};
+    data['data']['to']['type'] = 'friend';
+    data['data']['to']['id'] = admin_id;
+    data['data']['is_admin'] = 0;
+    data['data']['is_auto_reply'] = 0;
+    data['data']['cookie_id'] = cookie_id_iid;
+
+    data = JSON.stringify( data );
+    $(".no-msg").hide();
+    socket.send(data);
+
+}
+
+// 接受消息
+function getMsg(text) {
+    console.log(text);
+    // 标题栏闪烁
+
+    // 手机端显示新消息
+    if(window.screen.width <= 750){
+        $(".mobile-logo span").show();
+    }
+
+    var time =new Date();
+
+    //秒级时间戳
+    var second_time = parseInt(new Date().getTime()/1000);
+
+    //获取上一次消息的时间
+    var logtime = $('#logtime').val();
+    var chat_time = '';
+    if (!logtime || logtime == 0 || ( second_time - logtime ) >= 300) {
+        //时间格式 时 分  AM/PM 12小时制
+        chat_time = time.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true });
+        console.log(text.data.timestamp[0]);
+        $('#logtime').val(text.data.timestamp[0]);
+    }
+
+    var content = content_jx(text.data.content);
+
+    if (chat_time == '') {
+        var html = '';
+    } else {
+        var html = '				<p class="talk-time">— '+chat_time+' —</p>\n';
+    }
+    html += '                        <div class="m-kefus">\n' +
+        '                            <div class="m-kefus-left">\n' +
+        '                                <img src="/static/chat/images/chat-dialog-head-girl.png">\n' +
+        '                            </div>\n' +
+        '                            <div class="m-kefus-right">\n' +
+        '                                <div class="m-kefus-info">\n' +
+        '                                    <div style="overflow-x:auto;"><p>'+content+'</p></div>\n' +
+        '                                </div>\n' +
+        '                            </div>\n' +
+        '                            <span class="m-kefus-radios"></span>\n' +
+        '                        </div>';
+    appendList(html);
+    $(".no-msg").hide();
+
+}
+
+// 刷新列表
+function appendList(html) {
+
+	$(".list-box").append(html);
+	scrollBot();
+}
+
+// 消息列表滚动到最后
+function scrollBot() {
+	var div = document.getElementById('list-box');
+	// div.scrollTop = div.scrollHeight;//方式1通过调用隐藏元素的scrollIntoView()方法使其可见  没反应？
+	div.scrollIntoView(false);//方式2通过调用隐藏元素的scrollIntoView()方法使其可见
+}
+
+
+function content_jx(content){
+    //支持的html标签
+    var html = function(end){
+        return new RegExp('\\n*\\['+ (end||'') +'(pre|div|p|table|thead|th|tbody|tr|td|ul|li|ol|li|dl|dt|dd|h2|h3|h4|h5)([\\s\\S]*?)\\]\\n*', 'g');
+    };
+    content = (content||'').replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
+        .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;') //XSS
+        .replace(/@(\S+)(\s+?|$)/g, '@<a href="javascript:;">$1</a>$2') //转义@
+        .replace(/\s{2}/g, '&nbsp') //转义空格
+        .replace(/img\[([^\s]+?)\]/g, function(img){  //转义图片
+            return '<img class="msg-img" ondblclick="lookPic(this)" src="' + img.replace(/(^img\[)|(\]$)/g, '') + '"/>';
+        })
+        .replace(/file\([\s\S]+?\)\[[\s\S]*?\]\[[\s\S]*?\]/g, function(str){ //转义文件
+            var href = (str.match(/file\(([\s\S]+?)\)\[/)||[])[1];
+            var text = (str.match(/\)\[([\s\S]*?)\]/)||[])[1];
+            var size = (str.match(/\]\[([\s\S]*?)\]/)||[])[1];
+            if(!href) return str;
+            return '<span class="file-img"></span><span class="file-text">'+text+'<br>'+size+'kb</span><a class="file-download" target="_blank" href="'+href+'"></a>';
+        })
+        .replace(/face\[([^\s\[\]]+?)\]/g, function(face){  //转义表情
+            var alt = face.replace(/^face/g, '');
+            return '<img alt="'+ alt +'" title="'+ alt +'" src="' + faces[alt] + '">';
+        }).replace(/a\([\s\S]+?\)\[[\s\S]*?\]/g, function(str){ //转义链接
+            var href = (str.match(/a\(([\s\S]+?)\)\[/)||[])[1];
+            var text = (str.match(/\)\[([\s\S]*?)\]/)||[])[1];
+            if(!href) return str;
+            return '<a href="'+ href +'" target="_blank">'+ (text||href) +'</a>';
+        }).replace(html(), '\<$1 $2\>').replace(html('/'), '\</$1\>') //转移代码
+        .replace(/\n/g, '<br>') //转义换行
+    return content;
+}
+
+// 回车监听
+function keyEnter(obj){
+	var e = window.event || arguments.callee.caller.arguments[0];
+	e.cancelBubble = true;
+
+	var eCode = e.keyCode || e.which || e.charCode;
+	var ctrlKey = e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+	if (!ctrlKey && 13== eCode){
+		sendMsg($(".talk-btn"));
+		return false;
+	}
+}
+
+// 查看图片
+function lookPic(obj) {
+    var url = $(obj).attr("src");
+    window.parent.postMessage({
+        msg:"lookpic",
+        src:url
+    }, url_referer_web);
+}
+
+function sb_blur(){
+    if(document.body.offsetWidth <= 750){
+        $('.m-kefu-chat').css({
+            "position":"fixed",
+            "height":"100%",
+            "top":"unset"
+        })
+    }
+}
+function sb_focus(){
+    if(document.body.offsetWidth <= 750){
+        $('.m-kefu-chat').css({
+            "position":"absolute",
+            "height":window.screen.availHeight,
+            "top":document.documentElement.scrollTop || document.body.scrollTop
+        })
+    }
+}
+
+$(window).scroll(function() {
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    if(document.body.offsetWidth <= 750){
+        if(document.getElementById('input-text') == document.activeElement){
+            $('.m-kefu-chat').css({
+                "position":"absolute",
+                "height":window.screen.availHeight,
+                "top":scrollTop
+            })
+        }
+    }
+})
