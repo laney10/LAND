@@ -1,0 +1,109 @@
+var re=/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+var objExp=new RegExp(re);
+function submitMsg1(){
+	if(document.getElementById("full_namea").value==_langData.RNNAME ||document.getElementById("full_namea").value=="" )
+	{
+	alert(_langData.NAMETIP);
+	return false; 
+	}
+
+	var str=document.getElementById("emaila").value;
+	if(document.getElementById("emaila").value==_langData.RNEMAIL2 ||document.getElementById("emaila").value=="" )
+	{
+	alert(_langData.EMAIL_N_TIP); 
+	return false;
+	}
+    else if(objExp.test(str)==false)
+	{
+	alert(_langData.EMAIL_E_TIP); 
+	return false;
+	}
+	
+	// if(document.getElementById("tela").value==_langData.RNCOUNTRY ||document.getElementById("tela").value=="" )
+	// {
+	// alert(_langData.RNPLEASE_TEL);
+	// return false; 
+	// }
+		
+	if(document.getElementById("msga").value==_langData.RNMESSAGE_A ||document.getElementById("msga").value=="" )
+	{
+	alert(_langData.CONTENT_N_TIP);
+	return false; 
+	}
+	
+	if(document.getElementById("captcha").value==_langData.RNCAPTCHA || document.getElementById("captcha").value=="")
+	{
+	alert(_langData.RNPLEASE_CAPTCHA);
+	return false; 
+	}   
+	return true;
+}
+function submitMsg2(){
+	if(document.getElementById("full_nameb").value==_langData.RNNAME ||document.getElementById("full_nameb").value=="" )
+	{
+	alert(_langData.NAMETIP);
+	return false; 
+	}
+
+	var str=document.getElementById("emailb").value;
+	if(document.getElementById("emailb").value==_langData.RNEMAIL2 ||document.getElementById("emailb").value=="" )
+	{
+	alert(_langData.EMAIL_N_TIP); 
+	return false;
+	}
+    else if(objExp.test(str)==false)
+	{
+	alert(_langData.EMAIL_E_TIP); 
+	return false;
+	}
+		
+	if(document.getElementById("msgb").value==_langData.RNMESSAGE_A ||document.getElementById("msgb").value=="" )
+	{
+	alert(_langData.CONTENT_N_TIP);
+	return false; 
+	}
+
+	if(document.getElementById("countryb").value==_langData.RNMESSAGE_A ||document.getElementById("countryb").value=="" )
+	{
+	alert(_langData.RNPLEASE_COUNTRY);
+	return false; 
+	}
+	
+	if(document.getElementById("captchab").value==_langData.RNCAPTCHA || document.getElementById("captchab").value=="")
+	{
+	alert(_langData.RNPLEASE_CAPTCHA);
+	return false; 
+	}   
+	return true;
+}
+function submitMsg3(){
+	if(document.getElementById("select").value==_langData.RNNAME ||document.getElementById("select").value=="" )
+	{
+	alert(_langData.RNPLEASE_SELECT_COUNTRY);
+	return false; 
+	}
+	
+	return true;
+}
+
+function submitMsg4(){
+    if(document.getElementById("numbera").value=='Product number' ||document.getElementById("numbera").value=="" )
+	{
+	alert('Please enter your Product number');
+	return false; 
+	}
+	
+	if(document.getElementById("batcha").value=='Batch number' ||document.getElementById("batcha").value=="" )
+	{
+	alert('Please enter your Batch number');
+	return false; 
+	}
+	
+	if(document.getElementById("captchaa").value==_langData.RNCAPTCHA || document.getElementById("captchaa").value=="")
+	{
+	alert(_langData.RNPLEASE_CAPTCHA);
+	return false; 
+	}   
+	return true;
+}
+
