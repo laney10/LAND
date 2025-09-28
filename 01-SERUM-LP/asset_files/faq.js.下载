@@ -1,0 +1,18 @@
+$(function(){
+	let faqtop=$(".faq .faqtop");
+	
+	faqtop.click(function(e) {
+		e.preventDefault();
+		$this=$(this).parent("li");
+		if($this.find(".faqnr").is(":hidden")){
+			// $this.siblings().find(".faqnr").slideUp();
+			// $this.siblings().removeClass( 'aq');
+			$this.find(".faqnr").slideDown();
+			$this.addClass( 'dangyi');
+		}
+		else{
+			$this.find(".faqnr").slideUp();
+			$this.removeClass( 'dangyi');
+		}	
+	});
+})

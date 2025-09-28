@@ -1,0 +1,337 @@
+
+<!-- saved from url=(0160)https://chat.chukouplus.com/chat/home/index?cookie_id=1753864715200&site_host=https://www.excell-artica.com/application/gene-therapy.html&_referrer=&page_type=0 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.11.3.min.js.下载"></script>
+<script src="./index.js.下载"></script>
+<link rel="stylesheet" href="./webuploader.css">
+<link rel="stylesheet" href="./kefu_chat.css">
+
+<link rel="stylesheet" href="./layer.css" id="layuicss-skinlayercss"></head><body><div class="kefu-content">
+    <div class="kefu-talk">
+        <div class="talk-list">
+            <div class="list-content">
+                <div class="list-box" id="list-box">
+                                            <p class="no-msg">Please leave your email，<br>
+                            I will contact you as soon as possible！</p>
+                        <input type="hidden" id="logtime" value="0">
+                                    </div>
+            </div>
+        </div>
+        <div class="talk-botoom">
+            <div class="top-input">
+                <textarea class="input-text" id="input-text" placeholder="Type a message....." onkeyup="keyEnter(this)" onblur="sb_blur()" onfocus="sb_focus()" style="background-color: #fff"></textarea>
+            </div>
+
+
+            <div class="bot-menu">
+                <form id="kefu-file-form" enctype="multipart/form-data" onsubmit="return false" method="post">
+                <a class="pic-btn">
+                    <input type="file" name="file" onchange="sendPic(this)" accept="image/*">
+                </a>
+                <a class="file-btn">
+                    <input type="file" name="file" onchange="sendFile(this)">
+                </a>
+                </form>
+                <a class="talk-btn" onclick="sendMsg(this)"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./placeholder.js.下载"></script>
+
+<script>
+
+
+    var id = "120735401";
+    var cookie_id_iid = "1753864715200";
+    var name = "中国访客2025-07-30 16:35:49";
+    var country = "中国";
+    var ip = "180.172.82.139";
+    var wid = "6107";
+    var admin_id = "108254455";
+    var is_mobile = "1";
+    var chat_url = "chat.chukouplus.com:7272";
+    var uplode_url = "/chat/home/chatupload.html";
+    var url = "https://www.excell-artica.com/application/gene-therapy.html";
+    var source_referrer = "";
+    var source_name = "直接访问";
+    var source_url_type = "1";
+    var page_type = "0";
+    //建立WebSocket通讯
+    var socket = new WebSocket('wss://'+chat_url);
+
+    //连接成功时触发
+    socket.onopen = function(){
+        // 登录
+        var url = "https://www.excell-artica.com/application/gene-therapy.html";
+
+        var login_data = '{"type":"homeInit","id":"'+id+'","username":"'+name+'","avatar":"","wid":"'+wid+'","url":"'+url+'","admin_id":"'+admin_id+'","is_mobile":"'+is_mobile+'","ip":"'+ip+'","country":"'+country+'","source_referrer":"'+source_referrer+'","source_name":"'+source_name+'","source_url_type":"'+source_url_type+'","page_type":"'+page_type+'"}';
+        socket.send( login_data );
+    };
+
+    //监听收到的消息
+    socket.onmessage = function(res){
+
+        var data = eval("("+res.data+")");
+        switch(data['message_type']){
+            // 服务端ping客户端
+            case 'ping':
+                socket.send('{"type":"ping"}');
+                break;
+            // 登录 更新用户列表
+            case 'homeInit':
+
+                break;
+            // 检测聊天数据
+            case 'chatMessage':
+
+                if(!isWindowFocus){
+                    window.parent.postMessage({
+                        msg:"false"
+                    }, "https://www.excell-artica.com");
+                }else{
+                    window.parent.postMessage({
+                        msg:"true_news"
+                    }, "https://www.excell-artica.com");
+                }
+
+                getMsg(data);
+                break;
+        }
+    };
+
+    if (is_mobile == 2) {
+        document.addEventListener('visibilitychange',function() {
+            var that = {};
+            if(document.visibilityState=='hidden') {
+                that.hiddenTime = new Date().getTime()	//记录页面隐藏时间
+            }else{
+                let visibleTime = new Date().getTime();
+                if((visibleTime-that.hiddenTime)/1000>10){	//页面再次可见的时间-隐藏时间>10S,重连
+
+                    setTimeout(function(){
+                        //建立WebSocket通讯
+                        var socket = new WebSocket('wss://'+chat_url);
+
+                        //连接成功时触发
+                        socket.onopen = function(){
+                            // 登录
+                            var url = "https://www.excell-artica.com/application/gene-therapy.html";
+
+                            var login_data = '{"type":"homeInit","id":"'+id+'","username":"'+name+'","avatar":"","wid":"'+wid+'","url":"'+url+'","admin_id":"'+admin_id+'","is_mobile":"'+is_mobile+'","ip":"'+ip+'","country":"'+country+'","source_referrer":"'+source_referrer+'","source_name":"'+source_name+'","source_url_type":"'+source_url_type+'","page_type":"'+page_type+'"}';
+                            socket.send( login_data );
+                        };
+
+                        //监听收到的消息
+                        socket.onmessage = function(res){
+
+                            var data = eval("("+res.data+")");
+                            switch(data['message_type']){
+                                // 服务端ping客户端
+                                case 'ping':
+                                    socket.send('{"type":"ping"}');
+                                    break;
+                                // 登录 更新用户列表
+                                case 'homeInit':
+
+                                    break;
+                                // 检测聊天数据
+                                case 'chatMessage':
+
+                                    if(!isWindowFocus){
+                                        window.parent.postMessage({
+                                            msg:"false"
+                                        }, "https://www.excell-artica.com");
+                                    }
+
+                                    getMsg(data);
+                                    break;
+                            }
+                        };
+                    },1500);    //1.5S后重连
+                }else{
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    var isWindowFocus = true;
+    function focusin() { isWindowFocus=true;}
+    function focusout() { isWindowFocus=false;}
+
+    //注册焦点变化监听器
+    if ("onfocusin" in document){ //for IE
+        document.onfocusin = focusin;
+        document.onfocusout = focusout;
+    } else {
+        window.onblur = focusout;
+        window.onfocus= focusin;
+    }
+
+    function flashTitle(){
+        if(isWindowFocus){
+
+            window.parent.postMessage({
+                msg:"true"
+            }, "https://www.excell-artica.com");
+        }
+        setTimeout(function () {
+            flashTitle();
+        },200);
+    }
+    flashTitle();
+</script>
+<script>
+    var url_referer_web = "https://www.excell-artica.com";
+
+</script>
+
+<script>
+    // 选择文件类型大小判断
+    var maxsize = 2 * 1024 * 1024;//2M
+    var browserCfg = {};
+    var ua = window.navigator.userAgent;
+    var str = '';
+
+    if (ua.indexOf("MSIE") >= 1) {
+        browserCfg.ie = true;
+    }
+
+    // 验证图片
+    function sendPic(mfile) {
+        var filePath = mfile.value;
+        var fileExt = filePath.substring(filePath.lastIndexOf("."))
+            .toLowerCase();
+
+        if (!checkFileExt(fileExt, 1)) {
+            layer.msg("文件类型有误！");
+            mfile.value = "";
+            str = '<input type="file" name="file" onchange="sendPic(this)" accept="image/*"/>';
+            $(".pic-btn").html(str);
+            return;
+        }
+
+        if (!checkfile(mfile, 1)) {
+            mfile.value = "";
+            str = '<input type="file" name="file" onchange="sendPic(this)" accept="image/*"/>';
+            $(".pic-btn").html(str);
+            return;
+        }
+
+        commit(1);
+    }
+
+    // 验证附件
+    function sendFile(mfile) {
+        var filePath = mfile.value;
+        var fileExt = filePath.substring(filePath.lastIndexOf("."))
+            .toLowerCase();
+
+        if (!checkFileExt(fileExt, 2)) {
+            layer.msg("文件类型有误！");
+            mfile.value = "";
+            var str = '';
+            str = '<input type="file" name="file" onchange="sendFile(this)"/>';
+            $(".file-btn").html(str);
+            return;
+        }
+
+        if (!checkfile(mfile, 2)) {
+            mfile.value = "";
+            var str = '';
+            str = '<input type="file" name="file" onchange="sendFile(this)"/>';
+            $(".file-btn").html(str);
+            return;
+        }
+
+        commit(2);
+    }
+
+    // 提交图片或附件
+    function commit(type) {
+
+        $('#kefu-file-form').ajaxSubmit({
+            type: "post",
+            url: "/chat/home/chatupload.html",
+            data: $('#kefu-file-form').serialize(),
+            dataType: "json",
+            timeout: 5000,
+            success: function (data) {
+                if (data.status == 1) {
+                    if (type == 1) {
+                        sendMsgImg(data)
+                    } else {
+                        sendMsgFile(data)
+                    }
+
+                } else {
+                    layer.msg(data.msg);
+                }
+                // 清空文件和图片
+                str = '<input type="file" name="file" onchange="sendPic(this)" accept="image/*"/>';
+                $(".pic-btn").html(str);
+                str = '<input type="file" name="file" onchange="sendFile(this)"/>';
+                $(".file-btn").html(str);
+            }
+
+        });
+    }
+
+    // 文件类型
+    function checkFileExt(ext, type) {
+        if (type == 1) {
+            if (!ext.match(/.gif|.jpg|.jpeg|.png/i)) {
+                return false;
+            }
+        } else if (type == 2) {
+            if (!ext.match(/.gif|.jpg|.jpeg|.png|.xls|.xlsx|.doc|.docx|.pdf|.zip/i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 文件大小
+    function checkfile(obj_file, type) {
+        try {
+            var filesize = 0;
+            if (obj_file.files && obj_file.files[0]) {
+                filesize = obj_file.files[0].size;
+            } else if (browserCfg.ie) {
+                return true;
+            } else {
+                return true;
+            }
+
+            if (filesize <= 0) {
+                layer.msg("文件大小有误！");
+                return false;
+            } else if (filesize > maxsize) {
+                if (type == 1) {
+                    layer.msg("上传小于2M的图片！");
+                } else {
+                    layer.msg("上传小于2M的文件！");
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } catch (e) {
+            layer.msg("文件选择失败！");
+            return false;
+        }
+    }
+</script>
+<script src="./kefu_chat.js.下载"></script>
+<script src="./jqurey-form.js.下载"></script>
+<script src="./webuploader.js.下载"></script>
+<script src="./upload.js.下载"></script>
+<script src="./upload2.js.下载"></script>
+<script src="./layer.js.下载"></script>
+
+
+
+
+</body></html>
