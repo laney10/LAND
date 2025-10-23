@@ -1,14 +1,13 @@
-import { savePromoCode, isCodeExists, initDemoData } from '../../lib/upstash.js';
+import { savePromoCode, initDemoData } from '../lib/redis.js';
 
 export default async function handler(req, res) {
-  // 设置 CORS 头
+  // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
   
   if (req.method === 'POST') {
@@ -18,31 +17,16 @@ export default async function handler(req, res) {
       if (!name || !product || !contact) {
         return res.status(400).json({ 
           success: false, 
-          message: '缺少必要参数' 
+          message: '请提供完整信息：姓名、产品和联系方式' 
         });
       }
       
-      // 初始化演示数据
       await initDemoData();
       
-      // 生成促销码（确保不重复）
-      let promoCode;
-      let attempts = 0;
-      const maxAttempts = 5;
+      // 生成唯一促销码
+      const promoCode = generatePromoCode();
       
-      do {
-        promoCode = generatePromoCode();
-        attempts++;
-        
-        if (attempts > maxAttempts) {
-          return res.status(500).json({ 
-            success: false, 
-            message: '生成唯一促销码失败，请重试' 
-          });
-        }
-      } while (await isCodeExists(promoCode));
-      
-      // 保存到 Redis
+      // 保存到Redis
       await savePromoCode(promoCode, {
         name: name.trim(),
         product: product.trim(),
@@ -51,20 +35,21 @@ export default async function handler(req, res) {
       
       res.status(200).json({ 
         success: true, 
-        promoCode 
+        promoCode,
+        message: '促销码生成成功！'
       });
       
     } catch (error) {
-      console.error('Redis 错误:', error);
+      console.error('生成促销码错误:', error);
       res.status(500).json({ 
         success: false, 
-        message: '服务器错误' 
+        message: '服务器内部错误，请稍后重试' 
       });
     }
   } else {
     res.status(405).json({ 
       success: false, 
-      message: '只支持 POST 请求' 
+      message: '只支持POST请求' 
     });
   }
 }
