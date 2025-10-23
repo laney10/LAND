@@ -290,154 +290,191 @@
     </div>
 
     <script>
-        // Simulated database - stores promo code information
-        const demoPromoCodes = {
-            'PROMO-7X9Y2Z8A': {
-                name: 'John Smith',
-                product: 'Premium Package',
-                contact: 'john.smith@example.com',
-                createdAt: '2023-10-15T08:30:00Z',
-                isUsed: false
-            },
-            'PROMO-3B6D9F2C': {
-                name: 'Sarah Johnson',
-                product: 'Business Solution',
-                contact: 'sarah.j@example.com',
-                createdAt: '2023-10-16T14:20:00Z',
-                isUsed: false
-            },
-            'PROMO-8E1G4H7J': {
-                name: 'Michael Brown',
-                product: 'Enterprise Suite',
-                contact: 'm.brown@example.com',
-                createdAt: '2023-10-17T10:45:00Z',
-                isUsed: true,
-                usedAt: '2023-10-18T09:15:00Z'
-            }
-        };
+        // 模拟数据库（用于演示）
+const demoPromoCodes = {
+    'PROMO-DEMO-001': {
+        name: '演示用户张三',
+        product: '高级套餐',
+        contact: 'zhangsan@example.com',
+        createdAt: '2024-01-15T08:30:00Z',
+        isUsed: false
+    },
+    'PROMO-DEMO-002': {
+        name: '测试用户李四',
+        product: '企业版',
+        contact: 'lisi@example.com',
+        createdAt: '2024-01-16T14:20:00Z',
+        isUsed: true,
+        usedAt: '2024-01-17T09:15:00Z'
+    }
+};
+
+// 验证促销码
+async function verifyPromoCode() {
+    const promoCode = document.getElementById('promoCode').value.trim().toUpperCase();
+    const resultSection = document.getElementById('resultSection');
+    const loadingSection = document.getElementById('loadingSection');
+    
+    // 隐藏之前的结果，显示加载状态
+    resultSection.style.display = 'none';
+    loadingSection.style.display = 'block';
+    
+    if (!promoCode) {
+        showResult('请输入促销码', false);
+        loadingSection.style.display = 'none';
+        return;
+    }
+    
+    try {
+        // 调用API验证促销码
+        const response = await fetch(`/api/verify?code=${encodeURIComponent(promoCode)}`);
+        const result = await response.json();
         
-        function fillDemoCode(code) {
-            document.getElementById('promoCode').value = code;
+        if (result.valid) {
+            showValidResult(result.data, promoCode);
+        } else {
+            showResult(result.message, false);
         }
-        
-        async function verifyPromoCode() {
-            const promoCode = document.getElementById('promoCode').value.trim().toUpperCase();
-            const resultSection = document.getElementById('resultSection');
-            const loadingSection = document.getElementById('loadingSection');
+    } catch (error) {
+        console.error('验证错误:', error);
+        showResult('验证服务暂时不可用，请稍后重试', false);
+    }
+    
+    loadingSection.style.display = 'none';
+}
+
+// 显示验证成功的结果
+function showValidResult(details, promoCode) {
+    const resultSection = document.getElementById('resultSection');
+    const now = new Date().toLocaleString('zh-CN');
+    
+    resultSection.innerHTML = `
+        <div class="result-valid">
+            <div class="result-icon">✅</div>
+            <h3>有效的促销码</h3>
+            <p>此促销码有效，可用于折扣。</p>
             
-            // Hide previous results, show loading
-            resultSection.style.display = 'none';
-            loadingSection.style.display = 'block';
-            
-            if (!promoCode) {
-                showResult('Please enter a promotion code', false);
-                loadingSection.style.display = 'none';
-                return;
-            }
-            
-            // Simulate API call delay
-            setTimeout(() => {
-                // Check if promo code exists
-                if (demoPromoCodes[promoCode]) {
-                    const promoData = demoPromoCodes[promoCode];
-                    
-                    if (promoData.isUsed) {
-                        showResult('This promo code has already been used', false);
-                    } else {
-                        showValidResult(promoData, promoCode);
-                    }
-                } else {
-                    showResult('Invalid promo code', false);
-                }
-                
-                loadingSection.style.display = 'none';
-            }, 1000);
-        }
-        
-        function showValidResult(details, promoCode) {
-            const resultSection = document.getElementById('resultSection');
-            const now = new Date().toLocaleString();
-            
-            resultSection.innerHTML = `
-                <div class="result-valid">
-                    <div class="result-icon">✅</div>
-                    <h3>Valid Promotion Code</h3>
-                    <p>This code is active and can be used for discount.</p>
-                    
-                    <div class="customer-info">
-                        <div class="info-item">
-                            <span class="info-label">Promo Code:</span>
-                            <div class="info-value"><strong>${promoCode}</strong></div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Customer Name:</span>
-                            <div class="info-value">${details.name}</div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Product Interest:</span>
-                            <div class="info-value">${details.product}</div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Contact:</span>
-                            <div class="info-value">${details.contact}</div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Created Date:</span>
-                            <div class="info-value">${new Date(details.createdAt).toLocaleDateString()}</div>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Verified At:</span>
-                            <div class="info-value">${now}</div>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-success" onclick="markAsUsed('${promoCode}')" style="margin-top: 15px;">
-                        Mark as Used
-                    </button>
+            <div class="customer-info">
+                <div class="info-item">
+                    <span class="info-label">促销码:</span>
+                    <div class="info-value"><strong>${promoCode}</strong></div>
                 </div>
-            `;
-            resultSection.style.display = 'block';
-        }
-        
-        function showResult(message, isValid) {
-            const resultSection = document.getElementById('resultSection');
-            
-            resultSection.innerHTML = `
-                <div class="${isValid ? 'result-valid' : 'result-invalid'}">
-                    <div class="result-icon">${isValid ? '✅' : '❌'}</div>
-                    <h3>${isValid ? 'Valid Code' : 'Invalid Code'}</h3>
-                    <p>${message}</p>
+                <div class="info-item">
+                    <span class="info-label">客户姓名:</span>
+                    <div class="info-value">${details.name}</div>
                 </div>
-            `;
-            resultSection.style.display = 'block';
-        }
+                <div class="info-item">
+                    <span class="info-label">产品兴趣:</span>
+                    <div class="info-value">${details.product}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">联系方式:</span>
+                    <div class="info-value">${details.contact}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">创建日期:</span>
+                    <div class="info-value">${new Date(details.createdAt).toLocaleDateString('zh-CN')}</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">验证时间:</span>
+                    <div class="info-value">${now}</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-success" onclick="markAsUsed('${promoCode}')" style="margin-top: 15px;">
+                标记为已使用
+            </button>
+        </div>
+    `;
+    resultSection.style.display = 'block';
+}
+
+// 显示验证结果
+function showResult(message, isValid) {
+    const resultSection = document.getElementById('resultSection');
+    
+    resultSection.innerHTML = `
+        <div class="${isValid ? 'result-valid' : 'result-invalid'}">
+            <div class="result-icon">${isValid ? '✅' : '❌'}</div>
+            <h3>${isValid ? '有效代码' : '无效代码'}</h3>
+            <p>${message}</p>
+        </div>
+    `;
+    resultSection.style.display = 'block';
+}
+
+// 标记促销码为已使用
+async function markAsUsed(promoCode) {
+    try {
+        const response = await fetch('/api/mark-used', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: promoCode })
+        });
         
-        function markAsUsed(promoCode) {
-            if (demoPromoCodes[promoCode]) {
-                demoPromoCodes[promoCode].isUsed = true;
-                demoPromoCodes[promoCode].usedAt = new Date().toISOString();
-                alert('Promo code successfully marked as used!');
-                clearForm();
-            }
-        }
+        const result = await response.json();
         
-        function clearForm() {
-            document.getElementById('promoCode').value = '';
+        if (result.success) {
+            alert('促销码已成功标记为已使用！');
+            clearForm();
+        } else {
+            alert('操作失败：' + result.message);
+        }
+    } catch (error) {
+        console.error('标记错误:', error);
+        alert('网络错误，请重试');
+    }
+}
+
+// 清空表单
+function clearForm() {
+    document.getElementById('promoCode').value = '';
+    document.getElementById('resultSection').style.display = 'none';
+    document.getElementById('promoCode').focus();
+}
+
+// 填充演示代码
+function fillDemoCode(code) {
+    document.getElementById('promoCode').value = code;
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 焦点设置到输入框
+    document.getElementById('promoCode').focus();
+    
+    // 添加键盘事件监听（按Enter键验证）
+    document.getElementById('promoCode').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifyPromoCode();
+        }
+    });
+    
+    // 添加输入变化监听
+    document.getElementById('promoCode').addEventListener('input', function() {
+        // 如果用户开始输入，隐藏之前的结果
+        if (this.value.trim() && document.getElementById('resultSection').style.display !== 'none') {
             document.getElementById('resultSection').style.display = 'none';
-            document.getElementById('promoCode').focus();
         }
+    });
+});
+
+// 测试Redis连接（可选功能）
+async function testRedisConnection() {
+    try {
+        const response = await fetch('/api/test-redis');
+        const result = await response.json();
         
-        // Verify on Enter key press
-        document.getElementById('promoCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verifyPromoCode();
-            }
-        });
-        
-        // Auto-focus input on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('promoCode').focus();
-        });
-    </script>
+        if (result.success) {
+            alert('Redis连接正常！');
+        } else {
+            alert('Redis连接失败：' + result.message);
+        }
+    } catch (error) {
+        alert('测试连接失败：' + error.message);
+    }
+}</script>
 </body>
 </html>
