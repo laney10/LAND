@@ -307,7 +307,7 @@
             
             try {
                 // 使用新的基础URL验证促销码
-                const response = await fetch(`https://land-five-rho.vercel.app/promo-code/api/validate/${encodeURIComponent(promoCode)}`);
+                const response = await fetch(`https://land-five-rho.vercel.app/api/validate/${encodeURIComponent(promoCode)}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -331,7 +331,7 @@
         async function markAsUsed(promoCode) {
             try {
                 // 使用新的基础URL标记促销码为已使用
-                const response = await fetch(`https://land-five-rho.vercel.app/promo-code/api/use/${encodeURIComponent(promoCode)}`, {
+                const response = await fetch(`https://land-five-rho.vercel.app/api/use/${encodeURIComponent(promoCode)}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
