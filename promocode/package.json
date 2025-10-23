@@ -2,6 +2,7 @@
   "name": "promo-code-app",
   "version": "1.0.0",
   "description": "促销码生成和验证系统",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev"
   },
