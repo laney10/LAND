@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclusive Promotion Code</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #029A9B;
+            --primary-dark: #018a8b;
+            --accent: #FF9C00;
+            --accent-dark: #e08c00;
+            --secondary: #f8fafc;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --border: #cbd5e1;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #029A9B 0%, #018a8b 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .form-section, .success-section {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 154, 155, 0.2);
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--error);
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: var(--accent-dark);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-top: 1px solid var(--border);
+        }
+        
+        .success-section {
+            display: none;
+            text-align: center;
+            padding: 40px 30px;
+        }
+        
+        .success-icon {
+            font-size: 3.5rem;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+        
+        .promo-code {
+            background: var(--secondary);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary);
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Exclusive Promotion Code</h1>
+                <p>Submit your details to receive your unique promo code</p>
+            </div>
+            
+            <div id="formSection" class="form-section">
+                <form id="promoForm">
+                    <div class="form-group">
+                        <label for="fullName" class="required">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+                        <div class="error-message" id="nameError">Please enter your name</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productInterest" class="required">Product of Interest</label>
+                        <select id="productInterest" name="productInterest">
+                            <option value="">Select a product</option>
+                            <option value="premium">Premium Package</option>
+                            <option value="business">Business Solution</option>
+                            <option value="enterprise">Enterprise Suite</option>
+                            <option value="custom">Custom Solution</option>
+                        </select>
+                        <div class="error-message" id="productError">Please select a product</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="required">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number (Optional)</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+1 (123) 456-7890">
+                    </div>
+                    
+                    <button type="submit" class="btn">Get Promotion Code</button>
+                </form>
+            </div>
+            
+            <div id="successSection" class="success-section">
+                <div class="success-icon">✓</div>
+                <h2>Your Promotion Code is Ready!</h2>
+                
+                <div class="promo-code" id="promoCodeDisplay">PROMO-XXXX-XXXX</div>
+                
+                <div class="instructions">
+                    <p>Please save this unique promotion code. Present it to your sales representative to redeem your exclusive discount.</p>
+                    <p>Your dedicated sales contact will reach out to you shortly to discuss your selected product.</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>© 2023 Company Name. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('promoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.previousElementSibling.style.borderColor = '';
+            });
+            
+            // Validate form
+            let isValid = true;
+            const fullName = document.getElementById('fullName');
+            const productInterest = document.getElementById('productInterest');
+            const email = document.getElementById('email');
+            
+            if (!fullName.value.trim()) {
+                showError(fullName, 'nameError');
+                isValid = false;
+            }
+            
+            if (!productInterest.value) {
+                showError(productInterest, 'productError');
+                isValid = false;
+            }
+            
+            if (!validateEmail(email.value)) {
+                showError(email, 'emailError');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Generate promo code
+                const promoCode = generatePromoCode();
+                document.getElementById('promoCodeDisplay').textContent = promoCode;
+                
+                // Show success section
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('successSection').style.display = 'block';
+                
+                // Here you can add code to send data to backend
+                // saveToBackend(fullName.value, productInterest.value, email.value, promoCode);
+            }
+        });
+        
+        function showError(inputElement, errorId) {
+            const errorElement = document.getElementById(errorId);
+            errorElement.style.display = 'block';
+            inputElement.style.borderColor = 'var(--error)';
+        }
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function generatePromoCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'PROMO-';
+            
+            for (let i = 0; i < 8; i++) {
+                if (i > 0 && i % 4 === 0) code += '-';
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return code;
+        }
+        
+        // Function to save to backend (example)
+        async function saveToBackend(name, product, email, promoCode) {
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        product: product,
+                        contact: email,
+                        promoCode: promoCode
+                    })
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to save to backend');
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
