@@ -1,12 +1,15 @@
 {
-  "name": "promo-code-app",
+  "name": "promo-system",
   "version": "1.0.0",
-  "description": "促销码生成和验证系统",
+  "description": "促销码管理系统",
   "type": "module",
   "scripts": {
     "dev": "vercel dev"
   },
   "dependencies": {
-    "@vercel/kv": "^0.2.0"
+    "@upstash/redis": "^1.22.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^1.15.0"
   }
 }
