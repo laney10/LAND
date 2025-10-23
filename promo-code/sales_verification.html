@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo Code Verification - Sales Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #029A9B;
+            --primary-dark: #018a8b;
+            --accent: #FF9C00;
+            --accent-dark: #e08c00;
+            --secondary: #f8fafc;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --border: #cbd5e1;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #029A9B 0%, #018a8b 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .verification-section {
+            padding: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 154, 155, 0.2);
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: var(--accent-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--light-text);
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #0da271;
+        }
+        
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-valid {
+            background: #d1fae5;
+            border: 2px solid var(--success);
+            color: #065f46;
+        }
+        
+        .result-invalid {
+            background: #fee2e2;
+            border: 2px solid var(--error);
+            color: #7f1d1d;
+        }
+        
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .customer-info {
+            text-align: left;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            font-size: 1rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-top: 1px solid var(--border);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .demo-codes {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .demo-codes h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .demo-code {
+            display: inline-block;
+            background: white;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .demo-code:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Promo Code Verification</h1>
+                <p>Sales representative portal - Validate customer promotion codes</p>
+            </div>
+            
+            <div class="verification-section">
+                <div class="input-group">
+                    <label for="promoCode">Enter Promotion Code</label>
+                    <input type="text" id="promoCode" placeholder="e.g., PROMO-ABC123XYZ" autocomplete="off">
+                </div>
+                
+                <button class="btn" onclick="verifyPromoCode()">Verify Code</button>
+                <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                
+                <div class="demo-codes">
+                    <h3>Demo Codes (Click to use)</h3>
+                    <div class="demo-code" onclick="fillDemoCode('PROMO-7X9Y2Z8A')">PROMO-7X9Y2Z8A</div>
+                    <div class="demo-code" onclick="fillDemoCode('PROMO-3B6D9F2C')">PROMO-3B6D9F2C</div>
+                    <div class="demo-code" onclick="fillDemoCode('PROMO-8E1G4H7J')">PROMO-8E1G4H7J</div>
+                </div>
+                
+                <div class="loading" id="loadingSection">
+                    <div class="spinner"></div>
+                    <p>Verifying promotion code...</p>
+                </div>
+                
+                <div class="result-section" id="resultSection">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>© 2023 Company Name. Sales Verification Portal v1.0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated database - stores promo code information
+        const demoPromoCodes = {
+            'PROMO-7X9Y2Z8A': {
+                name: 'John Smith',
+                product: 'Premium Package',
+                contact: 'john.smith@example.com',
+                createdAt: '2023-10-15T08:30:00Z',
+                isUsed: false
+            },
+            'PROMO-3B6D9F2C': {
+                name: 'Sarah Johnson',
+                product: 'Business Solution',
+                contact: 'sarah.j@example.com',
+                createdAt: '2023-10-16T14:20:00Z',
+                isUsed: false
+            },
+            'PROMO-8E1G4H7J': {
+                name: 'Michael Brown',
+                product: 'Enterprise Suite',
+                contact: 'm.brown@example.com',
+                createdAt: '2023-10-17T10:45:00Z',
+                isUsed: true,
+                usedAt: '2023-10-18T09:15:00Z'
+            }
+        };
+        
+        function fillDemoCode(code) {
+            document.getElementById('promoCode').value = code;
+        }
+        
+        async function verifyPromoCode() {
+            const promoCode = document.getElementById('promoCode').value.trim().toUpperCase();
+            const resultSection = document.getElementById('resultSection');
+            const loadingSection = document.getElementById('loadingSection');
+            
+            // Hide previous results, show loading
+            resultSection.style.display = 'none';
+            loadingSection.style.display = 'block';
+            
+            if (!promoCode) {
+                showResult('Please enter a promotion code', false);
+                loadingSection.style.display = 'none';
+                return;
+            }
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Check if promo code exists
+                if (demoPromoCodes[promoCode]) {
+                    const promoData = demoPromoCodes[promoCode];
+                    
+                    if (promoData.isUsed) {
+                        showResult('This promo code has already been used', false);
+                    } else {
+                        showValidResult(promoData, promoCode);
+                    }
+                } else {
+                    showResult('Invalid promo code', false);
+                }
+                
+                loadingSection.style.display = 'none';
+            }, 1000);
+        }
+        
+        function showValidResult(details, promoCode) {
+            const resultSection = document.getElementById('resultSection');
+            const now = new Date().toLocaleString();
+            
+            resultSection.innerHTML = `
+                <div class="result-valid">
+                    <div class="result-icon">✅</div>
+                    <h3>Valid Promotion Code</h3>
+                    <p>This code is active and can be used for discount.</p>
+                    
+                    <div class="customer-info">
+                        <div class="info-item">
+                            <span class="info-label">Promo Code:</span>
+                            <div class="info-value"><strong>${promoCode}</strong></div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Customer Name:</span>
+                            <div class="info-value">${details.name}</div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Product Interest:</span>
+                            <div class="info-value">${details.product}</div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Contact:</span>
+                            <div class="info-value">${details.contact}</div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Created Date:</span>
+                            <div class="info-value">${new Date(details.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Verified At:</span>
+                            <div class="info-value">${now}</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="markAsUsed('${promoCode}')" style="margin-top: 15px;">
+                        Mark as Used
+                    </button>
+                </div>
+            `;
+            resultSection.style.display = 'block';
+        }
+        
+        function showResult(message, isValid) {
+            const resultSection = document.getElementById('resultSection');
+            
+            resultSection.innerHTML = `
+                <div class="${isValid ? 'result-valid' : 'result-invalid'}">
+                    <div class="result-icon">${isValid ? '✅' : '❌'}</div>
+                    <h3>${isValid ? 'Valid Code' : 'Invalid Code'}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            resultSection.style.display = 'block';
+        }
+        
+        function markAsUsed(promoCode) {
+            if (demoPromoCodes[promoCode]) {
+                demoPromoCodes[promoCode].isUsed = true;
+                demoPromoCodes[promoCode].usedAt = new Date().toISOString();
+                alert('Promo code successfully marked as used!');
+                clearForm();
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('promoCode').value = '';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('promoCode').focus();
+        }
+        
+        // Verify on Enter key press
+        document.getElementById('promoCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyPromoCode();
+            }
+        });
+        
+        // Auto-focus input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('promoCode').focus();
+        });
+    </script>
+</body>
+</html>
