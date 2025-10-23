@@ -290,42 +290,12 @@
     </div>
 
     <script>
-        // Simulated database - stores promo code information
-        const demoPromoCodes = {
-            'PROMO-7X9Y2Z8A': {
-                name: 'John Smith',
-                product: 'Premium Package',
-                contact: 'john.smith@example.com',
-                createdAt: '2023-10-15T08:30:00Z',
-                isUsed: false
-            },
-            'PROMO-3B6D9F2C': {
-                name: 'Sarah Johnson',
-                product: 'Business Solution',
-                contact: 'sarah.j@example.com',
-                createdAt: '2023-10-16T14:20:00Z',
-                isUsed: false
-            },
-            'PROMO-8E1G4H7J': {
-                name: 'Michael Brown',
-                product: 'Enterprise Suite',
-                contact: 'm.brown@example.com',
-                createdAt: '2023-10-17T10:45:00Z',
-                isUsed: true,
-                usedAt: '2023-10-18T09:15:00Z'
-            }
-        };
-        
-        function fillDemoCode(code) {
-            document.getElementById('promoCode').value = code;
-        }
-        
         async function verifyPromoCode() {
-            const promoCode = document.getElementById('promoCode').value.trim().toUpperCase();
+            const promoCode = document.getElementById('promoCode').value.trim();
             const resultSection = document.getElementById('resultSection');
             const loadingSection = document.getElementById('loadingSection');
             
-            // Hide previous results, show loading
+            // 隐藏之前的结果，显示加载中
             resultSection.style.display = 'none';
             loadingSection.style.display = 'block';
             
@@ -335,25 +305,62 @@
                 return;
             }
             
-            // Simulate API call delay
-            setTimeout(() => {
-                // Check if promo code exists
-                if (demoPromoCodes[promoCode]) {
-                    const promoData = demoPromoCodes[promoCode];
-                    
-                    if (promoData.isUsed) {
-                        showResult('This promo code has already been used', false);
-                    } else {
-                        showValidResult(promoData, promoCode);
-                    }
-                } else {
-                    showResult('Invalid promo code', false);
+            try {
+                // 使用新的基础URL验证促销码
+                const response = await fetch(`https://land-five-rho.vercel.app/promo-code/api/validate/${encodeURIComponent(promoCode)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
+                const data = await response.json();
+                
+                if (data.valid) {
+                    showValidResult(data.details, promoCode);
+                } else {
+                    showResult(data.message, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('Network error: ' + error.message, false);
+            } finally {
                 loadingSection.style.display = 'none';
-            }, 1000);
+            }
         }
         
+        async function markAsUsed(promoCode) {
+            try {
+                // 使用新的基础URL标记促销码为已使用
+                const response = await fetch(`https://land-five-rho.vercel.app/promo-code/api/use/${encodeURIComponent(promoCode)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        usedBy: 'Sales Representative'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to mark as used');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Promo code successfully marked as used!');
+                    clearForm();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error marking code as used: ' + error.message);
+            }
+        }
+        
+        // 辅助函数保持不变
         function showValidResult(details, promoCode) {
             const resultSection = document.getElementById('resultSection');
             const now = new Date().toLocaleString();
@@ -412,32 +419,11 @@
             resultSection.style.display = 'block';
         }
         
-        function markAsUsed(promoCode) {
-            if (demoPromoCodes[promoCode]) {
-                demoPromoCodes[promoCode].isUsed = true;
-                demoPromoCodes[promoCode].usedAt = new Date().toISOString();
-                alert('Promo code successfully marked as used!');
-                clearForm();
-            }
-        }
-        
         function clearForm() {
             document.getElementById('promoCode').value = '';
             document.getElementById('resultSection').style.display = 'none';
             document.getElementById('promoCode').focus();
         }
-        
-        // Verify on Enter key press
-        document.getElementById('promoCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verifyPromoCode();
-            }
-        });
-        
-        // Auto-focus input on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('promoCode').focus();
-        });
     </script>
 </body>
 </html>
