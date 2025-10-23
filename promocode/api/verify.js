@@ -1,8 +1,8 @@
-import { initDemoData, getAllPromoCodes } from '../lib/redis.js';
+import { getPromoCode, initDemoData } from '../lib/redis.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') {
@@ -11,58 +11,50 @@ export default async function handler(req, res) {
   
   if (req.method === 'GET') {
     try {
-      // 检查环境变量
-      const hasEnvVars = process.env.UPSTASH_REDIS_REST_URL && 
-                         process.env.UPSTASH_REDIS_REST_TOKEN;
+      const { code } = req.query;
       
-      if (!hasEnvVars) {
-        return res.status(500).json({
-          success: false,
-          message: 'Redis环境变量未正确配置',
-          environment: {
-            urlConfigured: !!process.env.UPSTASH_REDIS_REST_URL,
-            tokenConfigured: !!process.env.UPSTASH_REDIS_REST_TOKEN
-          }
+      if (!code) {
+        return res.status(400).json({ 
+          valid: false, 
+          message: '请输入促销码' 
         });
       }
       
-      // 初始化演示数据
       await initDemoData();
       
-      // 获取所有促销码验证连接
-      const allCodes = await getAllPromoCodes();
+      const promoData = await getPromoCode(code.toUpperCase());
       
-      res.status(200).json({
-        success: true,
-        message: 'Redis连接测试成功！',
-        timestamp: new Date().toISOString(),
-        stats: {
-          totalPromoCodes: Object.keys(allCodes).length,
-          demoCodes: 2 // 我们初始化了2个演示代码
-        },
-        environment: {
-          urlConfigured: true,
-          tokenConfigured: true,
-          nodeEnv: process.env.NODE_ENV
-        }
+      if (!promoData) {
+        return res.json({ 
+          valid: false, 
+          message: '无效的促销码，请检查后重试' 
+        });
+      }
+      
+      if (promoData.isUsed) {
+        return res.json({ 
+          valid: false, 
+          message: '该促销码已被使用',
+          usedAt: promoData.usedAt 
+        });
+      }
+      
+      res.json({ 
+        valid: true, 
+        message: '促销码有效！',
+        data: promoData 
       });
       
     } catch (error) {
-      console.error('Redis测试错误:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Redis连接失败',
-        error: error.message,
-        environment: {
-          urlConfigured: !!process.env.UPSTASH_REDIS_REST_URL,
-          tokenConfigured: !!process.env.UPSTASH_REDIS_REST_TOKEN,
-          nodeEnv: process.env.NODE_ENV
-        }
+      console.error('验证促销码错误:', error);
+      res.status(500).json({ 
+        valid: false, 
+        message: '验证服务暂时不可用，请稍后重试' 
       });
     }
   } else {
     res.status(405).json({ 
-      success: false, 
+      valid: false, 
       message: '只支持GET请求' 
     });
   }
