@@ -233,96 +233,181 @@
     </div>
 
     <script>
-        document.getElementById('promoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Reset errors
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
-                el.previousElementSibling.style.borderColor = '';
+        // 表单验证和提交逻辑
+document.getElementById('promoForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // 重置错误状态
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+        el.previousElementSibling.style.borderColor = '';
+    });
+    
+    // 获取表单数据
+    const fullName = document.getElementById('fullName').value.trim();
+    const productInterest = document.getElementById('productInterest').value;
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    // 验证表单
+    let isValid = true;
+    
+    if (!fullName) {
+        showError('fullName', 'nameError', '请输入您的姓名');
+        isValid = false;
+    }
+    
+    if (!productInterest) {
+        showError('productInterest', 'productError', '请选择感兴趣的产品');
+        isValid = false;
+    }
+    
+    if (!validateEmail(email)) {
+        showError('email', 'emailError', '请输入有效的电子邮件地址');
+        isValid = false;
+    }
+    
+    if (isValid) {
+        // 显示加载状态
+        const submitBtn = document.querySelector('.btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = '生成中...';
+        submitBtn.disabled = true;
+        
+        try {
+            // 调用API生成促销码
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: fullName,
+                    product: productInterest,
+                    contact: email,
+                    phone: phone || ''
+                })
             });
             
-            // Validate form
-            let isValid = true;
-            const fullName = document.getElementById('fullName');
-            const productInterest = document.getElementById('productInterest');
-            const email = document.getElementById('email');
+            const result = await response.json();
             
-            if (!fullName.value.trim()) {
-                showError(fullName, 'nameError');
-                isValid = false;
-            }
-            
-            if (!productInterest.value) {
-                showError(productInterest, 'productError');
-                isValid = false;
-            }
-            
-            if (!validateEmail(email.value)) {
-                showError(email, 'emailError');
-                isValid = false;
-            }
-            
-            if (isValid) {
-                // Generate promo code
-                const promoCode = generatePromoCode();
-                document.getElementById('promoCodeDisplay').textContent = promoCode;
-                
-                // Show success section
+            if (result.success) {
+                // 显示成功页面
+                document.getElementById('promoCodeDisplay').textContent = result.promoCode;
                 document.getElementById('formSection').style.display = 'none';
                 document.getElementById('successSection').style.display = 'block';
                 
-                // Here you can add code to send data to backend
-                // saveToBackend(fullName.value, productInterest.value, email.value, promoCode);
+                // 可选：将促销码复制到剪贴板
+                copyToClipboard(result.promoCode);
+            } else {
+                alert('生成失败：' + result.message);
+                // 恢复按钮状态
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
+            
+        } catch (error) {
+            console.error('网络错误:', error);
+            alert('网络错误，请检查连接后重试');
+            // 恢复按钮状态
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+});
+
+// 显示错误信息
+function showError(inputId, errorId, message) {
+    const inputElement = document.getElementById(inputId);
+    const errorElement = document.getElementById(errorId);
+    
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    inputElement.style.borderColor = 'var(--error)';
+}
+
+// 邮箱验证
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// 复制到剪贴板功能
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            // 可选：显示复制成功提示
+            console.log('促销码已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败:', err);
         });
-        
-        function showError(inputElement, errorId) {
-            const errorElement = document.getElementById(errorId);
-            errorElement.style.display = 'block';
-            inputElement.style.borderColor = 'var(--error)';
+    } else {
+        // 备用方法
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            console.log('促销码已复制到剪贴板');
+        } catch (err) {
+            console.error('复制失败:', err);
         }
-        
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
+        document.body.removeChild(textArea);
+    }
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 焦点设置到第一个输入框
+    document.getElementById('fullName').focus();
+    
+    // 为可选字段添加清除功能
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('focus', function() {
+        if (this.value === '') {
+            this.placeholder = '例如: +86 138 0013 8000';
         }
-        
-        function generatePromoCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'PROMO-';
-            
-            for (let i = 0; i < 8; i++) {
-                if (i > 0 && i % 4 === 0) code += '-';
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
-            return code;
+    });
+    
+    phoneInput.addEventListener('blur', function() {
+        if (this.value === '') {
+            this.placeholder = 'Phone Number (Optional)';
         }
-        
-        // Function to save to backend (example)
-        async function saveToBackend(name, product, email, promoCode) {
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        product: product,
-                        contact: email,
-                        promoCode: promoCode
-                    })
-                });
-                
-                if (!response.ok) {
-                    console.error('Failed to save to backend');
-                }
-            } catch (error) {
-                console.error('Network error:', error);
-            }
+    });
+    
+    // 添加实时验证
+    document.getElementById('fullName').addEventListener('input', function() {
+        if (this.value.trim()) {
+            clearError('fullName', 'nameError');
         }
+    });
+    
+    document.getElementById('productInterest').addEventListener('change', function() {
+        if (this.value) {
+            clearError('productInterest', 'productError');
+        }
+    });
+    
+    document.getElementById('email').addEventListener('input', function() {
+        if (validateEmail(this.value)) {
+            clearError('email', 'emailError');
+        }
+    });
+});
+
+// 清除错误状态
+function clearError(inputId, errorId) {
+    const inputElement = document.getElementById(inputId);
+    const errorElement = document.getElementById(errorId);
+    
+    errorElement.style.display = 'none';
+    inputElement.style.borderColor = '';
+}
     </script>
 </body>
 </html>
