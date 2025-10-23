@@ -1,0 +1,58 @@
+import { kv } from '@vercel/kv'
+
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    try {
+      const { fullName, productInterest, email, phone } = req.body;
+      
+      // 验证必填字段
+      if (!fullName || !productInterest || !email) {
+        return res.status(400).json({ error: '请填写所有必填字段' });
+      }
+      
+      // 生成促销码
+      const generatePromoCode = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'PROMO-';
+        for (let i = 0; i < 8; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      };
+      
+      const promoCode = generatePromoCode();
+      const createdAt = new Date().toISOString();
+      
+      // 存储到KV数据库
+      const promoData = {
+        promoCode,
+        fullName,
+        productInterest,
+        email,
+        phone: phone || '',
+        createdAt,
+        isUsed: false,
+        usedAt: null
+      };
+      
+      // 存储数据
+      await kv.set(promoCode, promoData);
+      
+      // 存储到促销码列表
+      await kv.lpush('all_promo_codes', promoCode);
+      
+      res.status(200).json({
+        success: true,
+        promoCode: promoCode,
+        message: '促销码生成成功'
+      });
+      
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: '服务器错误' });
+    }
+  } else {
+    res.setHeader('Allow', ['POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}
