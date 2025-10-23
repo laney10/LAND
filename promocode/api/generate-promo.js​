@@ -1,4 +1,12 @@
-import { kv } from '@vercel/kv'
+// 使用动态导入替代静态导入
+let kv;
+async function getKV() {
+  if (!kv) {
+    const { kv: kvModule } = await import('@vercel/kv');
+    kv = kvModule;
+  }
+  return kv;
+}
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -23,6 +31,9 @@ export default async function handler(req, res) {
       const promoCode = generatePromoCode();
       const createdAt = new Date().toISOString();
       
+      // 获取KV实例
+      const kvInstance = await getKV();
+      
       // 存储到KV数据库
       const promoData = {
         promoCode,
@@ -36,10 +47,10 @@ export default async function handler(req, res) {
       };
       
       // 存储数据
-      await kv.set(promoCode, promoData);
+      await kvInstance.set(promoCode, promoData);
       
       // 存储到促销码列表
-      await kv.lpush('all_promo_codes', promoCode);
+      await kvInstance.lpush('all_promo_codes', promoCode);
       
       res.status(200).json({
         success: true,
@@ -49,7 +60,7 @@ export default async function handler(req, res) {
       
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).json({ error: '服务器错误' });
+      res.status(500).json({ error: '服务器错误: ' + error.message });
     }
   } else {
     res.setHeader('Allow', ['POST']);
