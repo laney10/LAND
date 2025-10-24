@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('x-content-type-options', 'nosniff');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://1.excell-artica.com');
   
   // 处理OPTIONS请求（预检请求）
   if (req.method === 'OPTIONS') {
