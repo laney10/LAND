@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>系统诊断</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background: #d4ffd4; }
+        .error { background: #ffd4d4; }
+    </style>
+</head>
+<body>
+    <h1>系统诊断工具</h1>
+    
+    <div class="test" id="fileTest">
+        <h3>文件存在性测试</h3>
+        <button onclick="testFiles()">测试文件访问</button>
+        <div id="fileResult"></div>
+    </div>
+    
+    <div class="test" id="apiTest">
+        <h3>API端点测试</h3>
+        <button onclick="testAPIs()">测试API访问</button>
+        <div id="apiResult"></div>
+    </div>
+    
+    <script>
+        async function testFiles() {
+            const files = [
+                '/public/verify.html',
+                '/public/index.html',
+                '/api/test-redis.js',
+                '/verify',
+                '/api/test-redis'
+            ];
+            
+            let results = '';
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    results += `${file}: ${response.status} ${response.statusText}<br>`;
+                } catch (error) {
+                    results += `${file}: ERROR - ${error.message}<br>`;
+                }
+            }
+            
+            document.getElementById('fileResult').innerHTML = results;
+        }
+        
+        async function testAPIs() {
+            const apis = [
+                { url: '/api/test-redis', method: 'GET' },
+                { url: '/api/generate', method: 'POST', body: { test: true } }
+            ];
+            
+            let results = '';
+            
+            for (const api of apis) {
+                try {
+                    const options = { method: api.method };
+                    if (api.body) {
+                        options.headers = { 'Content-Type': 'application/json' };
+                        options.body = JSON.stringify(api.body);
+                    }
+                    
+                    const response = await fetch(api.url, options);
+                    const text = await response.text();
+                    results += `${api.url} (${api.method}): ${response.status}<br>`;
+                    if (text.length < 500) {
+                        results += `Response: ${text}<br>`;
+                    }
+                } catch (error) {
+                    results += `${api.url}: ERROR - ${error.message}<br>`;
+                }
+                results += '<br>';
+            }
+            
+            document.getElementById('apiResult').innerHTML = results;
+        }
+    </script>
+</body>
+</html>
