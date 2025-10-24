@@ -2,6 +2,7 @@
   "name": "promo-system",
   "version": "1.0.0",
   "description": "促销码管理系统",
+  "type": "module",
   "main": "api/test-redis.js",
   "scripts": {
     "dev": "vercel dev"
@@ -10,6 +11,6 @@
     "@upstash/redis": "^1.22.0"
   },
   "engines": {
-    "node": ">=16.x"
+    "node": "18.x"
   }
 }
