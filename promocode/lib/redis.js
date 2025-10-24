@@ -1,14 +1,79 @@
-const { Redis } = require('@upstash/redis');
+// lib/redis.js - 完整的Redis工具库
+let Redis;
+try {
+  Redis = require('@upstash/redis').Redis;
+} catch (error) {
+  console.error('无法加载@upstash/redis模块:', error);
+}
 
-// 初始化Redis客户端
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
+// 促销码数据结构的键名常量
 const PROMO_CODES_KEY = 'promo_codes';
 
+// 初始化Redis客户端
+function createRedisClient() {
+  if (!Redis) {
+    throw new Error('@upstash/redis模块未正确安装');
+  }
+  
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  
+  if (!url || !token) {
+    throw new Error('Redis环境变量未设置: UPSTASH_REDIS_REST_URL 或 UPSTASH_REDIS_REST_TOKEN');
+  }
+  
+  console.log('创建Redis客户端，URL:', url.substring(0, 20) + '...');
+  
+  return new Redis({
+    url: url,
+    token: token,
+  });
+}
+
+let redis;
+try {
+  redis = createRedisClient();
+} catch (error) {
+  console.error('创建Redis客户端失败:', error);
+  redis = null;
+}
+
+// 测试连接函数
+async function testConnection() {
+  if (!redis) {
+    return {
+      success: false,
+      error: 'Redis客户端未初始化'
+    };
+  }
+  
+  try {
+    // 简单的ping测试
+    await redis.set('connection_test', 'test_value', { ex: 60 }); // 60秒后过期
+    const value = await redis.get('connection_test');
+    
+    if (value === 'test_value') {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        error: '连接测试返回值不匹配'
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// 保存促销码
 async function savePromoCode(promoCode, userData) {
+  if (!redis) {
+    throw new Error('Redis客户端未初始化');
+  }
+  
   const promoData = {
     ...userData,
     createdAt: new Date().toISOString(),
@@ -23,16 +88,39 @@ async function savePromoCode(promoCode, userData) {
   return promoData;
 }
 
+// 获取促销码
 async function getPromoCode(promoCode) {
+  if (!redis) {
+    throw new Error('Redis客户端未初始化');
+  }
+  
   const promoData = await redis.hget(PROMO_CODES_KEY, promoCode);
-  return promoData ? JSON.parse(promoData) : null;
+  
+  if (!promoData) {
+    return null;
+  }
+  
+  try {
+    return JSON.parse(promoData);
+  } catch (error) {
+    console.error('解析促销码数据失败:', error);
+    return null;
+  }
 }
 
+// 标记促销码为已使用
 async function markPromoCodeAsUsed(promoCode) {
+  if (!redis) {
+    throw new Error('Redis客户端未初始化');
+  }
+  
   const promoData = await getPromoCode(promoCode);
   
-  if (!promoData) return false;
+  if (!promoData) {
+    return false;
+  }
   
+  // 更新促销码状态
   promoData.isUsed = true;
   promoData.usedAt = new Date().toISOString();
   
@@ -43,22 +131,53 @@ async function markPromoCodeAsUsed(promoCode) {
   return true;
 }
 
+// 获取所有促销码
 async function getAllPromoCodes() {
-  const allCodes = await redis.hgetall(PROMO_CODES_KEY);
-  if (!allCodes) return {};
-  
-  const result = {};
-  for (const [code, data] of Object.entries(allCodes)) {
-    if (data) result[code] = JSON.parse(data);
+  if (!redis) {
+    console.warn('Redis客户端未初始化，返回空对象');
+    return {};
   }
-  return result;
+  
+  try {
+    const allCodes = await redis.hgetall(PROMO_CODES_KEY);
+    
+    if (!allCodes) {
+      return {};
+    }
+    
+    // 解析所有JSON数据
+    const result = {};
+    for (const [code, data] of Object.entries(allCodes)) {
+      if (data) {
+        try {
+          result[code] = JSON.parse(data);
+        } catch (error) {
+          console.error(`解析促销码 ${code} 数据失败:`, error);
+          result[code] = { error: '数据解析失败' };
+        }
+      }
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('获取所有促销码失败:', error);
+    return {};
+  }
 }
 
+// 初始化演示数据
 async function initDemoData() {
+  if (!redis) {
+    console.warn('Redis客户端未初始化，跳过演示数据初始化');
+    return;
+  }
+  
   try {
     const exists = await redis.hexists(PROMO_CODES_KEY, 'PROMO-DEMO-001');
     
     if (!exists) {
+      console.log('初始化演示数据...');
+      
       const demoData = {
         'PROMO-DEMO-001': JSON.stringify({
           name: '演示用户张三',
@@ -66,21 +185,91 @@ async function initDemoData() {
           contact: 'zhangsan@example.com',
           createdAt: '2024-01-15T08:30:00Z',
           isUsed: false
+        }),
+        'PROMO-DEMO-002': JSON.stringify({
+          name: '测试用户李四',
+          product: '企业版',
+          contact: 'lisi@example.com',
+          createdAt: '2024-01-16T14:20:00Z',
+          isUsed: true,
+          usedAt: '2024-01-17T09:15:00Z'
         })
       };
       
       await redis.hset(PROMO_CODES_KEY, demoData);
       console.log('演示数据初始化完成');
+    } else {
+      console.log('演示数据已存在，跳过初始化');
     }
   } catch (error) {
-    console.error('初始化演示数据错误:', error);
+    console.error('初始化演示数据失败:', error);
   }
 }
 
+// 获取统计信息
+async function getStats() {
+  if (!redis) {
+    return {
+      total: 0,
+      used: 0,
+      available: 0
+    };
+  }
+  
+  try {
+    const allCodes = await getAllPromoCodes();
+    const total = Object.keys(allCodes).length;
+    const used = Object.values(allCodes).filter(code => code.isUsed).length;
+    
+    return {
+      total: total,
+      used: used,
+      available: total - used
+    };
+  } catch (error) {
+    console.error('获取统计信息失败:', error);
+    return {
+      total: 0,
+      used: 0,
+      available: 0
+    };
+  }
+}
+
+// 检查促销码是否存在
+async function isCodeExists(promoCode) {
+  if (!redis) {
+    return false;
+  }
+  
+  try {
+    const exists = await redis.hexists(PROMO_CODES_KEY, promoCode);
+    return exists === 1;
+  } catch (error) {
+    console.error('检查促销码是否存在失败:', error);
+    return false;
+  }
+}
+
+// 导出所有函数
 module.exports = {
+  // 连接相关
+  testConnection,
+  
+  // 促销码操作
   savePromoCode,
   getPromoCode,
   markPromoCodeAsUsed,
   getAllPromoCodes,
-  initDemoData
+  isCodeExists,
+  
+  // 工具函数
+  initDemoData,
+  getStats,
+  
+  // 状态检查
+  getRedisStatus: () => ({
+    isConnected: !!redis,
+    hasEnvVars: !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  })
 };
