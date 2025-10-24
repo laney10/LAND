@@ -1,7 +1,20 @@
-import { savePromoCode, initDemoData } from '../lib/redis.js';
+// api/generate.js - CommonJS 版本
+const { savePromoCode, initDemoData } = require('../lib/redis.js');
 
-export default async function handler(req, res) {
-  // 设置 CORS 头
+function generatePromoCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'PROMO-';
+  
+  for (let i = 0; i < 8; i++) {
+    if (i > 0 && i % 4 === 0) code += '-';
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return code;
+}
+
+module.exports = async function handler(req, res) {
+  // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,7 +25,14 @@ export default async function handler(req, res) {
   
   if (req.method === 'POST') {
     try {
-      const { name, product, contact } = req.body;
+      let body = '';
+      
+      // 处理请求体数据
+      for await (const chunk of req) {
+        body += chunk.toString();
+      }
+      
+      const { name, product, contact } = JSON.parse(body);
       
       if (!name || !product || !contact) {
         return res.status(400).json({ 
@@ -27,7 +47,7 @@ export default async function handler(req, res) {
       // 生成促销码
       const promoCode = generatePromoCode();
       
-      // 保存到 Redis
+      // 保存到Redis
       await savePromoCode(promoCode, {
         name: name.trim(),
         product: product.trim(),
@@ -51,19 +71,7 @@ export default async function handler(req, res) {
   } else {
     res.status(405).json({ 
       success: false, 
-      message: '只支持 POST 请求' 
+      message: '只支持POST请求' 
     });
   }
-}
-
-function generatePromoCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'PROMO-';
-  
-  for (let i = 0; i < 8; i++) {
-    if (i > 0 && i % 4 === 0) code += '-';
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  
-  return code;
-}
+};
