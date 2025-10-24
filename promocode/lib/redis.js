@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+const { Redis } = require('@upstash/redis');
 
 // 初始化Redis客户端
 const redis = new Redis({
@@ -6,10 +6,9 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-// 促销码数据结构的键名常量
 const PROMO_CODES_KEY = 'promo_codes';
 
-export async function savePromoCode(promoCode, userData) {
+async function savePromoCode(promoCode, userData) {
   const promoData = {
     ...userData,
     createdAt: new Date().toISOString(),
@@ -24,12 +23,12 @@ export async function savePromoCode(promoCode, userData) {
   return promoData;
 }
 
-export async function getPromoCode(promoCode) {
+async function getPromoCode(promoCode) {
   const promoData = await redis.hget(PROMO_CODES_KEY, promoCode);
   return promoData ? JSON.parse(promoData) : null;
 }
 
-export async function markPromoCodeAsUsed(promoCode) {
+async function markPromoCodeAsUsed(promoCode) {
   const promoData = await getPromoCode(promoCode);
   
   if (!promoData) return false;
@@ -44,7 +43,7 @@ export async function markPromoCodeAsUsed(promoCode) {
   return true;
 }
 
-export async function getAllPromoCodes() {
+async function getAllPromoCodes() {
   const allCodes = await redis.hgetall(PROMO_CODES_KEY);
   if (!allCodes) return {};
   
@@ -55,29 +54,33 @@ export async function getAllPromoCodes() {
   return result;
 }
 
-// 初始化演示数据
-export async function initDemoData() {
-  const exists = await redis.hexists(PROMO_CODES_KEY, 'PROMO-DEMO-001');
-  
-  if (!exists) {
-    const demoData = {
-      'PROMO-DEMO-001': JSON.stringify({
-        name: '演示用户张三',
-        product: '高级套餐',
-        contact: 'zhangsan@example.com',
-        createdAt: '2024-01-15T08:30:00Z',
-        isUsed: false
-      }),
-      'PROMO-DEMO-002': JSON.stringify({
-        name: '测试用户李四',
-        product: '企业版',
-        contact: 'lisi@example.com',
-        createdAt: '2024-01-16T14:20:00Z',
-        isUsed: true,
-        usedAt: '2024-01-17T09:15:00Z'
-      })
-    };
+async function initDemoData() {
+  try {
+    const exists = await redis.hexists(PROMO_CODES_KEY, 'PROMO-DEMO-001');
     
-    await redis.hset(PROMO_CODES_KEY, demoData);
+    if (!exists) {
+      const demoData = {
+        'PROMO-DEMO-001': JSON.stringify({
+          name: '演示用户张三',
+          product: '高级套餐',
+          contact: 'zhangsan@example.com',
+          createdAt: '2024-01-15T08:30:00Z',
+          isUsed: false
+        })
+      };
+      
+      await redis.hset(PROMO_CODES_KEY, demoData);
+      console.log('演示数据初始化完成');
+    }
+  } catch (error) {
+    console.error('初始化演示数据错误:', error);
   }
 }
+
+module.exports = {
+  savePromoCode,
+  getPromoCode,
+  markPromoCodeAsUsed,
+  getAllPromoCodes,
+  initDemoData
+};
