@@ -1,4 +1,4 @@
-// lib/redis.js - 完整的Redis工具库
+// lib/redis.js - 使用正确的环境变量名称
 let Redis;
 try {
   Redis = require('@upstash/redis').Redis;
@@ -15,11 +15,12 @@ function createRedisClient() {
     throw new Error('@upstash/redis模块未正确安装');
   }
   
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // 使用正确的环境变量名称
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
   
   if (!url || !token) {
-    throw new Error('Redis环境变量未设置: UPSTASH_REDIS_REST_URL 或 UPSTASH_REDIS_REST_TOKEN');
+    throw new Error('Redis环境变量未设置: KV_REST_API_URL 或 KV_REST_API_TOKEN');
   }
   
   console.log('创建Redis客户端，URL:', url.substring(0, 20) + '...');
@@ -270,6 +271,6 @@ module.exports = {
   // 状态检查
   getRedisStatus: () => ({
     isConnected: !!redis,
-    hasEnvVars: !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+    hasEnvVars: !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
   })
 };
