@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1.js"  // 关键修改：添加 .js 扩展名
+      "dest": "/api/$1.js"
     },
     {
       "src": "/verify",
