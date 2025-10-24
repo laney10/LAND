@@ -1,4 +1,3 @@
-// api/generate.js - CommonJS 版本
 const { savePromoCode, initDemoData } = require('../lib/redis.js');
 
 function generatePromoCode() {
@@ -14,7 +13,6 @@ function generatePromoCode() {
 }
 
 module.exports = async function handler(req, res) {
-  // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -27,7 +25,6 @@ module.exports = async function handler(req, res) {
     try {
       let body = '';
       
-      // 处理请求体数据
       for await (const chunk of req) {
         body += chunk.toString();
       }
@@ -41,13 +38,10 @@ module.exports = async function handler(req, res) {
         });
       }
       
-      // 初始化演示数据
       await initDemoData();
       
-      // 生成促销码
       const promoCode = generatePromoCode();
       
-      // 保存到Redis
       await savePromoCode(promoCode, {
         name: name.trim(),
         product: product.trim(),
