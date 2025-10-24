@@ -276,7 +276,7 @@ document.getElementById('promoForm').addEventListener('submit', async function(e
         
         try {
             // 调用API生成促销码
-            const response = await fetch('/api/generate', {
+            const response = await fetch(`https://promocode-psi.vercel.app/api/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
