@@ -1,4 +1,3 @@
-// lib/redis.js - 使用正确的环境变量名称
 let Redis;
 try {
   Redis = require('@upstash/redis').Redis;
@@ -6,16 +5,13 @@ try {
   console.error('无法加载@upstash/redis模块:', error);
 }
 
-// 促销码数据结构的键名常量
 const PROMO_CODES_KEY = 'promo_codes';
 
-// 初始化Redis客户端
 function createRedisClient() {
   if (!Redis) {
     throw new Error('@upstash/redis模块未正确安装');
   }
   
-  // 使用正确的环境变量名称
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
   
@@ -39,7 +35,6 @@ try {
   redis = null;
 }
 
-// 测试连接函数
 async function testConnection() {
   if (!redis) {
     return {
@@ -49,7 +44,6 @@ async function testConnection() {
   }
   
   try {
-    // 简单的ping测试
     await redis.set('connection_test', 'test_value', { ex: 60 }); // 60秒后过期
     const value = await redis.get('connection_test');
     
@@ -69,7 +63,6 @@ async function testConnection() {
   }
 }
 
-// 保存促销码
 async function savePromoCode(promoCode, userData) {
   if (!redis) {
     throw new Error('Redis客户端未初始化');
@@ -83,13 +76,12 @@ async function savePromoCode(promoCode, userData) {
   };
   
   await redis.hset(PROMO_CODES_KEY, { 
-    [promoCode]: JSON.stringify(promoData) 
+    [promoCode]: promoData 
   });
   
   return promoData;
 }
 
-// 获取促销码
 async function getPromoCode(promoCode) {
   if (!redis) {
     throw new Error('Redis客户端未初始化');
@@ -101,15 +93,9 @@ async function getPromoCode(promoCode) {
     return null;
   }
   
-  try {
-    return JSON.parse(promoData);
-  } catch (error) {
-    console.error('解析促销码数据失败:', error);
-    return null;
-  }
+  return promoData;
 }
 
-// 标记促销码为已使用
 async function markPromoCodeAsUsed(promoCode) {
   if (!redis) {
     throw new Error('Redis客户端未初始化');
@@ -121,18 +107,16 @@ async function markPromoCodeAsUsed(promoCode) {
     return false;
   }
   
-  // 更新促销码状态
   promoData.isUsed = true;
   promoData.usedAt = new Date().toISOString();
   
   await redis.hset(PROMO_CODES_KEY, { 
-    [promoCode]: JSON.stringify(promoData) 
+    [promoCode]: promoData 
   });
   
   return true;
 }
 
-// 获取所有促销码
 async function getAllPromoCodes() {
   if (!redis) {
     console.warn('Redis客户端未初始化，返回空对象');
@@ -142,31 +126,13 @@ async function getAllPromoCodes() {
   try {
     const allCodes = await redis.hgetall(PROMO_CODES_KEY);
     
-    if (!allCodes) {
-      return {};
-    }
-    
-    // 解析所有JSON数据
-    const result = {};
-    for (const [code, data] of Object.entries(allCodes)) {
-      if (data) {
-        try {
-          result[code] = JSON.parse(data);
-        } catch (error) {
-          console.error(`解析促销码 ${code} 数据失败:`, error);
-          result[code] = { error: '数据解析失败' };
-        }
-      }
-    }
-    
-    return result;
+    return allCodes || {};
   } catch (error) {
     console.error('获取所有促销码失败:', error);
     return {};
   }
 }
 
-// 初始化演示数据
 async function initDemoData() {
   if (!redis) {
     console.warn('Redis客户端未初始化，跳过演示数据初始化');
@@ -179,22 +145,23 @@ async function initDemoData() {
     if (!exists) {
       console.log('初始化演示数据...');
       
+      // 直接存储对象，不需要JSON.stringify
       const demoData = {
-        'PROMO-DEMO-001': JSON.stringify({
+        'PROMO-DEMO-001': {
           name: '演示用户张三',
           product: '高级套餐',
           contact: 'zhangsan@example.com',
           createdAt: '2024-01-15T08:30:00Z',
           isUsed: false
-        }),
-        'PROMO-DEMO-002': JSON.stringify({
+        },
+        'PROMO-DEMO-002': {
           name: '测试用户李四',
           product: '企业版',
           contact: 'lisi@example.com',
           createdAt: '2024-01-16T14:20:00Z',
           isUsed: true,
           usedAt: '2024-01-17T09:15:00Z'
-        })
+        }
       };
       
       await redis.hset(PROMO_CODES_KEY, demoData);
@@ -207,7 +174,6 @@ async function initDemoData() {
   }
 }
 
-// 获取统计信息
 async function getStats() {
   if (!redis) {
     return {
@@ -237,7 +203,6 @@ async function getStats() {
   }
 }
 
-// 检查促销码是否存在
 async function isCodeExists(promoCode) {
   if (!redis) {
     return false;
@@ -252,23 +217,18 @@ async function isCodeExists(promoCode) {
   }
 }
 
-// 导出所有函数
 module.exports = {
-  // 连接相关
   testConnection,
   
-  // 促销码操作
   savePromoCode,
   getPromoCode,
   markPromoCodeAsUsed,
   getAllPromoCodes,
   isCodeExists,
   
-  // 工具函数
   initDemoData,
   getStats,
   
-  // 状态检查
   getRedisStatus: () => ({
     isConnected: !!redis,
     hasEnvVars: !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
